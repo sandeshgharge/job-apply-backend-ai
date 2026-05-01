@@ -1,0 +1,85 @@
+# Python cache
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+
+venv/
+.env/
+.venv/
+env/
+ENV/
+jab/
+docs/
+
+# Environment variables
+
+.env
+.env.*
+!.env.example
+
+# Logs
+
+*.log
+logs/
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build / packaging
+
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test / coverage
+
+.coverage
+htmlcov/
+.pytest_cache/
+
+# FastAPI / project specific
+
+*.db
+*.sqlite3
+
+# Generated files (PDFs, docs, exports)
+
+static/
+media/
+output/
+generated/
+
+# Temporary files
+
+tmp/
+temp/
+
+# Node (if frontend exists in same repo)
+
+node_modules/
+
+# Docker (optional overrides)
+
+docker-compose.override.yml
+
+# Prompt backups / drafts (optional)
+
+prompts/*.bak
+
+# Secrets
+
+secrets.json
+credentials.json

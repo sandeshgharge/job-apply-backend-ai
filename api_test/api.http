@@ -1,0 +1,19 @@
+GET http://localhost:8000/hello
+
+###
+
+POST http://localhost:8000/extract-job
+Content-Type: application/json
+
+{
+  "url": "https://www.sparixglobal.com/career/?job_id=z5G7h3l6a1kMvyS65NP3c0cDrFtD_tGYV_6YUT6ZaM0="
+}
+
+###
+
+POST http://localhost:8000/generate
+Content-Type: application/json
+
+{
+  "prompt": "Hi, how are you doing?"
+}
