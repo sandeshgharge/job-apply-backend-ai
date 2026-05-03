@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from services.docx_service import replace_placeholders
 from services.model_connection.send_prompt import call_model
 from services.scraper import extract_job
 from services.ai_service import extract_job_data
@@ -28,11 +27,18 @@ async def generate(request: Request):
     return {"output": data}
 
 @app.post("/extract-job-data")
-def extract_job_data_endpoint(job_description:str):
-    return extract_job_data(req.job_description)
+async def extract_job_data_endpoint(request: Request):
+    #body = await request.json()
+    #print(body)
+    #job_description = body.get("job_description")
+
+    with open('prompts/sample_job_description.txt', 'r') as f:
+        job_description = f.read()
+    return extract_job_data(job_description)
+    pass
 
 @app.post("/extract-job")
-def extract(req: ExtractRequest):
+async def extract(req: ExtractRequest):
     return extract_job(req.url)
 
 @app.get("/hello")
