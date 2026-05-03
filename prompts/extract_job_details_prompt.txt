@@ -1,15 +1,18 @@
-You are a smart detail extractor
+You are a smart job detail extractor
 
 Task:
-
 Read the Job Description for analysis- [job_description]
 Extract job details and send response strictly in JSON format as mentioned below -
 
 {
-    company_name: str
-    job_title: str
-    hiring_manager: str
-    skills: List[str]
+  company: string;
+  role: string;
+  location: string;
+  status: JobStatus;
+  salary?: string;
+  contactName?: string;
+  jobUrl?: string;
+  skillGroups?: {category: string, skills: string[]}[];
 }
 
 Rules:
