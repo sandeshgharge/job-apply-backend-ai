@@ -28,17 +28,13 @@ async def generate(request: Request):
 
 @app.post("/extract-job-data")
 async def extract_job_data_endpoint(request: Request):
-    #body = await request.json()
-    #print(body)
-    #job_description = body.get("job_description")
+    body = await request.json()
+    job_description = body.get("job_description")
 
-    with open('prompts/sample_job_description.txt', 'r') as f:
-        job_description = f.read()
     return extract_job_data(job_description)
-    pass
 
-@app.post("/extract-job")
-async def extract(req: ExtractRequest):
+@app.post("/extract-job-description")
+def extract(req: ExtractRequest):
     return extract_job(req.url)
 
 @app.get("/hello")
