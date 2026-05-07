@@ -2,7 +2,7 @@ GET http://localhost:8000/hello
 
 ###
 
-POST http://localhost:8000/extract-job
+POST http://localhost:8000/extract-job-description
 Content-Type: application/json
 
 {

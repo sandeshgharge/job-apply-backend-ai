@@ -5,15 +5,26 @@ Read the Job Description for analysis- [job_description]
 Extract job details and send response strictly in JSON format as mentioned below -
 
 {
-  company: string;
+  companyName: string;
   role: string;
-  location: string;
+  companyLocation: string;
   status: JobStatus;
-  salary?: string;
-  contactName?: string;
-  jobUrl?: string;
+  contactName: string;
+  jobUrl: string;
   skillGroups?: {category: string, skills: string[]}[];
 }
 
 Rules:
 - Do NOT alter the JSON format
+- Empty String if contactName not mentioned
+- Every property name enclosed in double quotes
+- Maintain the JSON with no comments
+- Add categories in skillGroups as follows-
+  1. 'Programming Languages'
+  2. 'Language Frameworks'
+  3. 'Databases',
+  4. 'Monitoring Tools'
+  5. 'DevOps Tools'
+  6. 'Cloud Platforms'
+  7. 'Other Skills'
+- Add relevant skills in skills property

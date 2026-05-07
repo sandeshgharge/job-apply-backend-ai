@@ -1,4 +1,5 @@
 from services.model_connection.send_prompt import call_model
+import json
 
 def extract_job_data(job_description: str) -> dict:
 
@@ -13,4 +14,5 @@ def extract_job_data(job_description: str) -> dict:
 
 
     output = call_model(prompt)
-    return output
+    print("Extracted job data:", output)
+    return json.loads(output)
