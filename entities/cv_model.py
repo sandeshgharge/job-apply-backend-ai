@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
-from typing import List
-from datetime import datetime
+from typing import List, Optional
+from datetime import datetime, timezone
 
 
 # -----------------------------
@@ -219,8 +219,9 @@ class CvData(BaseModel):
 # -----------------------------
 
 class CVDocument(BaseModel):
+    _id: Optional[str] = None
     user_id: str
     cv_info: CvData
     version: int = 1
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
