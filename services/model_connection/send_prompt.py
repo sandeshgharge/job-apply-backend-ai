@@ -1,7 +1,7 @@
 import requests
 from config.env import settings
 
-AGENTIC_URL = settings.AGENTIC_URL
+AGENTIC_URL = settings.AGENTIC_API_URL
 AGENTIC_API_KEY = settings.AGENTIC_API_KEY
 MODEL_NAME = "mistral"
 

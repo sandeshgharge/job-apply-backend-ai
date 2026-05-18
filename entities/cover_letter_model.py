@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 
@@ -16,6 +16,7 @@ class CoverLetterInfo(BaseModel):
     sectionPrompts: List[CoverLetterSection]
 
 class CoverLetterDocument(BaseModel):
+    _id: Optional[str] = None
     user_id: str
     cover_letter_info: CoverLetterInfo
     version: int = 1

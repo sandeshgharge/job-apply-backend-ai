@@ -1,17 +1,20 @@
 from bson import ObjectId
 from fastapi import HTTPException
+from pydantic import Field
 from entities.cv_model import CVDocument
 from services.mongo_db_connection import cv_collection
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 async def create_cv(cv: CVDocument):
-    payload = cv.model_dump()
+
+    version = get_next_version(cv.user_id)
+    cv.version = version
+    cv._id = None
+    cv.created_at = Field(default_factory=lambda: datetime.now(timezone.utc))
+    payload = cv.model_dump(exclude_none=True)
     result = await cv_collection.insert_one(payload)
-    return {
-        "message": "CV created",
-        "id": str(result.inserted_id)
-    }
+    return result
 
 
 async def get_user_cvs(user_id: str):
@@ -58,7 +61,7 @@ async def update_cv(cv_id: str, cv_info: dict):
         {
             "$set": {
                 "cv_info": cv_info,
-                "updated_at": datetime.utcnow()
+                "updated_at": Field(default_factory=lambda: datetime.now(timezone.utc))
             }
         }
     )
@@ -78,3 +81,10 @@ async def delete_cv(cv_id: str):
         )
 
     return {"message": "CV deleted"}
+
+async def get_next_version(user_id: str) -> int:
+    result = await cv_collection.find_one(
+        {"user_id": user_id},
+        sort=[("version", -1)]
+    )
+    return (result["version"] + 1) if result else 1
