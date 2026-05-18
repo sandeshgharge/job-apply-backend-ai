@@ -1,12 +1,14 @@
 import requests
+from config.env import settings
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+AGENTIC_URL = settings.AGENTIC_URL
+AGENTIC_API_KEY = settings.AGENTIC_API_KEY
 MODEL_NAME = "mistral"
 
 
 def call_model(prompt: str) -> str:
     response = requests.post(
-        OLLAMA_URL,
+        AGENTIC_URL,
         json={
             "model": MODEL_NAME,
             "prompt": prompt,
@@ -15,6 +17,6 @@ def call_model(prompt: str) -> str:
     )
 
     if response.status_code != 200:
-        raise Exception(f"Ollama error: {response.text}")
+        raise Exception(f"Agentic AI error: {response.text}")
 
     return response.json()["response"]

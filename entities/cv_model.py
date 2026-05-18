@@ -7,12 +7,6 @@ from datetime import datetime
 # PERSONAL INFO
 # -----------------------------
 
-class CvAddress(BaseModel):
-    city: str
-    state: str
-    country: str
-
-
 class CvLinks(BaseModel):
     linkedin: str
     github: str
@@ -26,7 +20,7 @@ class CvPersonalInfo(BaseModel):
     headline: str
     email: str
     phone: str
-    address: CvAddress
+    address: str
     links: CvLinks
 
 
