@@ -2,8 +2,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from middleware.supabase_middleware import SupabaseAuthMiddleware
 from services.model_connection.send_prompt import call_model
-from services.scraper import extract_job
+from services.scraper_service import extract_job
 from services.ai_service import extract_job_data
 
 app = FastAPI()
@@ -18,6 +19,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(SupabaseAuthMiddleware)
 
 
 @app.post("/generate")
