@@ -6,6 +6,8 @@ from middleware.supabase_middleware import SupabaseAuthMiddleware
 from services.model_connection.send_prompt import call_model
 from services.scraper_service import extract_job
 from services.ai_service import extract_job_data
+from routes.cover_letter_api import cl_router
+from routes.cv_api import cv_router
 
 app = FastAPI()
 
@@ -20,7 +22,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(SupabaseAuthMiddleware)
+#app.add_middleware(SupabaseAuthMiddleware)
+app.include_router(cl_router)
+app.include_router(cv_router)
 
 
 @app.post("/generate")
