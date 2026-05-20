@@ -1,6 +1,10 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, AliasChoices
 from typing import List, Optional
-from datetime import datetime, timezone
+from pydantic.alias_generators import to_camel
+
+
+# Shared config for all models
+camel_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 # -----------------------------
@@ -8,20 +12,24 @@ from datetime import datetime, timezone
 # -----------------------------
 
 class CvLinks(BaseModel):
-    linkedin: str
-    github: str
-    portfolio: str
-    website: str
+    model_config = camel_config
+
+    linkedin: Optional[str] = None
+    github: Optional[str] = None
+    portfolio: Optional[str] = None
+    website: Optional[str] = None
 
 
 class CvPersonalInfo(BaseModel):
-    firstName: str
-    lastName: str
-    headline: str
+    model_config = camel_config
+
+    first_name: str
+    last_name: str
+    headline: Optional[str] = None
     email: str
-    phone: str
-    address: str
-    links: CvLinks
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    links: Optional[CvLinks] = None
 
 
 # -----------------------------
@@ -29,17 +37,21 @@ class CvPersonalInfo(BaseModel):
 # -----------------------------
 
 class CvLanguage(BaseModel):
+    model_config = camel_config
+
     id: str
     language: str
     proficiency: str
 
 
 class CvSkills(BaseModel):
-    technical: List[str]
-    soft: List[str]
-    tools: List[str]
-    frameworks: List[str]
-    languages: List[CvLanguage]
+    model_config = camel_config
+
+    technical: List[str] = []
+    soft: List[str] = []
+    tools: List[str] = []
+    frameworks: List[str] = []
+    languages: List[CvLanguage] = []
 
 
 # -----------------------------
@@ -47,21 +59,25 @@ class CvSkills(BaseModel):
 # -----------------------------
 
 class CvResponsibility(BaseModel):
+    model_config = camel_config
+
     id: str
     text: str
-    include: bool
+    include: bool = True
 
 
 class CvExperience(BaseModel):
+    model_config = camel_config
+
     id: str
-    jobTitle: str
+    job_title: str
     company: str
-    location: str
-    startDate: str
-    endDate: str
-    current: bool
-    responsibilities: List[CvResponsibility]
-    include: bool
+    location: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    current: bool = False
+    responsibilities: List[CvResponsibility] = []
+    include: bool = True
 
 
 # -----------------------------
@@ -69,14 +85,16 @@ class CvExperience(BaseModel):
 # -----------------------------
 
 class CvEducation(BaseModel):
+    model_config = camel_config
+
     id: str
     degree: str
-    fieldOfStudy: str
+    field_of_study: Optional[str] = None
     institution: str
-    location: str
-    startDate: str
-    endDate: str
-    include: bool
+    location: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    include: bool = True
 
 
 # -----------------------------
@@ -84,15 +102,17 @@ class CvEducation(BaseModel):
 # -----------------------------
 
 class CvProject(BaseModel):
+    model_config = camel_config
+
     id: str
     title: str
-    description: str
-    technologies: List[str]
-    role: str
-    startDate: str
-    endDate: str
-    link: str
-    include: bool
+    description: Optional[str] = None
+    technologies: List[str] = []
+    role: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    link: Optional[str] = None
+    include: bool = True
 
 
 # -----------------------------
@@ -100,14 +120,16 @@ class CvProject(BaseModel):
 # -----------------------------
 
 class CvCertification(BaseModel):
+    model_config = camel_config
+
     id: str
     name: str
-    issuer: str
-    issueDate: str
-    expiryDate: str
-    credentialId: str
-    credentialUrl: str
-    include: bool
+    issuer: Optional[str] = None
+    issue_date: Optional[str] = None
+    expiry_date: Optional[str] = None
+    credential_id: Optional[str] = None
+    credential_url: Optional[str] = None
+    include: bool = True
 
 
 # -----------------------------
@@ -115,12 +137,14 @@ class CvCertification(BaseModel):
 # -----------------------------
 
 class CvAward(BaseModel):
+    model_config = camel_config
+
     id: str
     title: str
-    issuer: str
-    date: str
-    description: str
-    include: bool
+    issuer: Optional[str] = None
+    date: Optional[str] = None
+    description: Optional[str] = None
+    include: bool = True
 
 
 # -----------------------------
@@ -128,13 +152,15 @@ class CvAward(BaseModel):
 # -----------------------------
 
 class CvPublication(BaseModel):
+    model_config = camel_config
+
     id: str
     title: str
-    publisher: str
-    date: str
-    link: str
-    description: str
-    include: bool
+    publisher: Optional[str] = None
+    date: Optional[str] = None
+    link: Optional[str] = None
+    description: Optional[str] = None
+    include: bool = True
 
 
 # -----------------------------
@@ -142,14 +168,16 @@ class CvPublication(BaseModel):
 # -----------------------------
 
 class CvVolunteer(BaseModel):
+    model_config = camel_config
+
     id: str
     role: str
     organization: str
-    location: str
-    startDate: str
-    endDate: str
-    description: str
-    include: bool
+    location: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    description: Optional[str] = None
+    include: bool = True
 
 
 # -----------------------------
@@ -157,13 +185,15 @@ class CvVolunteer(BaseModel):
 # -----------------------------
 
 class CvReference(BaseModel):
+    model_config = camel_config
+
     id: str
     name: str
-    position: str
-    company: str
-    email: str
-    phone: str
-    include: bool
+    position: Optional[str] = None
+    company: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    include: bool = True
 
 
 # -----------------------------
@@ -171,27 +201,20 @@ class CvReference(BaseModel):
 # -----------------------------
 
 class CvCustomItem(BaseModel):
+    model_config = camel_config
+
     id: str
     text: str
-    include: bool
+    include: bool = True
 
 
 class CvCustomSection(BaseModel):
+    model_config = camel_config
+
     id: str
-    sectionTitle: str
-    include: bool
-    items: List[CvCustomItem]
-
-
-# -----------------------------
-# METADATA
-# -----------------------------
-
-class CvMetadata(BaseModel):
-    createdAt: str
-    updatedAt: str
-    version: str
-    source: str
+    section_title: str
+    include: bool = True
+    items: List[CvCustomItem] = []
 
 
 # -----------------------------
@@ -199,29 +222,39 @@ class CvMetadata(BaseModel):
 # -----------------------------
 
 class CvData(BaseModel):
-    personalInfo: CvPersonalInfo
-    summary: str
-    skills: CvSkills
-    experience: List[CvExperience]
-    education: List[CvEducation]
-    projects: List[CvProject]
-    certifications: List[CvCertification]
-    awards: List[CvAward]
-    publications: List[CvPublication]
-    volunteerExperience: List[CvVolunteer]
-    interests: List[str]
-    references: List[CvReference]
-    customSections: List[CvCustomSection]
-    metadata: CvMetadata
+    model_config = camel_config
+
+    personal_info: CvPersonalInfo
+    summary: Optional[str] = None
+    skills: Optional[CvSkills] = None
+    experience: List[CvExperience] = []
+    education: List[CvEducation] = []
+    projects: List[CvProject] = []
+    certifications: List[CvCertification] = []
+    awards: List[CvAward] = []
+    publications: List[CvPublication] = []
+    volunteer_experience: List[CvVolunteer] = []
+    interests: List[str] = []
+    references: List[CvReference] = []
+    custom_sections: List[CvCustomSection] = []
+
 
 # -----------------------------
 # DOCUMENT
 # -----------------------------
 
 class CVDocument(BaseModel):
-    _id: Optional[str] = None
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True
+    )
+
+    id: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("_id"),   # reads _id from MongoDB
+        serialization_alias="id"                # writes as _id to MongoDB
+    )
     user_id: str
-    cv_info: CvData
+    title: Optional[str] = None
+    cv_data: CvData
     version: int = 1
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

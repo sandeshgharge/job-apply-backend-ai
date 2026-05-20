@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class CoverLetterSection(BaseModel):
@@ -16,9 +16,12 @@ class CoverLetterInfo(BaseModel):
     sectionPrompts: List[CoverLetterSection]
 
 class CoverLetterDocument(BaseModel):
-    _id: Optional[str] = None
-    user_id: str
-    cover_letter_info: CoverLetterInfo
+    id: Optional[str] = None
+    title: str
+    userId: str
+    cldata: CoverLetterInfo
     version: int = 1
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = {
+        "populate_by_name": True  # ✅ add here, inside CVDocument only
+    }
