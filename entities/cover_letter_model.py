@@ -1,27 +1,42 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, AliasChoices
 from typing import List, Optional
+from pydantic.alias_generators import to_camel
 from datetime import datetime, timezone
 
 
+# Shared config for all models
+camel_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
 class CoverLetterSection(BaseModel):
+    model_config = camel_config
+
     id: str
     title: str
     content: str
-    sectionPrompt: str
+    section_prompt: str
     loading: bool
 
 
 class CoverLetterInfo(BaseModel):
-    commonPrompt: str
-    sectionPrompts: List[CoverLetterSection]
+    model_config = camel_config
+
+    common_prompt: str
+    section_prompts: List[CoverLetterSection]
+
 
 class CoverLetterDocument(BaseModel):
-    id: Optional[str] = None
-    title: str
-    userId: str
-    cldata: CoverLetterInfo
-    version: int = 1
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True
+    )
 
-    model_config = {
-        "populate_by_name": True  # ✅ add here, inside CVDocument only
-    }
+    id: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("_id"),   # reads _id from MongoDB
+        serialization_alias="id"                # writes as _id to MongoDB
+    )
+    user_id: str
+    title: str
+    cl_data: CoverLetterInfo
+    version: int = 1
