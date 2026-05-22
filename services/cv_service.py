@@ -3,10 +3,9 @@ from fastapi import HTTPException
 from pydantic import Field
 from entities.cv_model import CVDocument
 from services.mongo_db_connection.db import cv_collection
-from datetime import datetime, timezone
 
 
-async def create_cv(cv: CVDocument):
+async def create_cv(cv: CVDocument) -> CVDocument:
 
     cv.version = await get_next_version(cv.user_id)
     cv.id = None
@@ -19,10 +18,10 @@ async def create_cv(cv: CVDocument):
     return CVDocument.model_validate(created)
 
 
-async def get_user_cvs(user_id: str):
+async def get_user_cvs(user_id: str) -> list[CVDocument]:
     cursor = cv_collection.find({"user_id": user_id})
 
-    cvs : CVDocument = []
+    cvs: list[CVDocument] = []
     async for cv in cursor:
         cv["_id"] = str(cv["_id"])
         cvs.append(CVDocument.model_validate(cv))
@@ -30,7 +29,7 @@ async def get_user_cvs(user_id: str):
     return cvs
 
 
-async def get_cv(cv_id: str):
+async def get_cv(cv_id: str) -> CVDocument:
     cv = await cv_collection.find_one({
         "_id": ObjectId(cv_id)
     })
@@ -42,34 +41,34 @@ async def get_cv(cv_id: str):
         )
 
     cv["_id"] = str(cv["_id"])
-    return cv
+    return CVDocument.model_validate(cv)
 
 
-async def update_cv(cv_id: str, cv_info: dict):
-    existing = await cv_collection.find_one({
-        "_id": ObjectId(cv_id)
-    })
-
-    if not existing:
-        raise HTTPException(
-            status_code=404,
-            detail="CV not found"
-        )
+async def update_cv(cv_id: str, cv_info: dict) -> CVDocument: 
     cv_update = CVDocument.model_validate(cv_info)
-    await cv_collection.update_one(
+    updated_doc = await cv_collection.find_one_and_update(
         {"_id": ObjectId(cv_id)},
         {
             "$set": {
                 "cv_data": cv_update.cv_data.model_dump(),
                 "title": cv_update.title
             }
-        }
+        },
+        return_document=True
     )
 
-    return {"message": "CV updated"}
+    if updated_doc is None:
+        raise HTTPException(
+            status_code=404,
+            detail="CV not found"
+        )
+    
+    updated_doc["_id"] = str(updated_doc["_id"])
+
+    return CVDocument.model_validate(updated_doc)
 
 
-async def delete_cv(cv_id: str):
+async def delete_cv(cv_id: str) -> dict[str, str]:
     result = await cv_collection.delete_one({
         "_id": ObjectId(cv_id)
     })
