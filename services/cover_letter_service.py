@@ -62,7 +62,8 @@ async def update_cover_letter(
                 "cl_data": cl_update.cl_data.model_dump(),
                 "title": cl_update.title
             }
-        }
+        },
+        return_document=True
     )
 
     if updated_doc is None:
