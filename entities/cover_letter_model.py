@@ -40,3 +40,21 @@ class CoverLetterDocument(BaseModel):
     title: str
     cl_data: CoverLetterInfo
     version: int = 1
+
+
+class CoverLetterDocInfo(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True
+    )
+
+    applicant_name: str
+    applicant_location: str
+    applicant_email: str
+    company_name: str
+    company_location: str
+    contact_name: Optional[str] = "Hiring Manager"
+    date: str
+    role: str
+    paragraphs: List[str]
+    sign_url: Optional[str]

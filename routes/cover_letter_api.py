@@ -1,6 +1,12 @@
-from fastapi import APIRouter, HTTPException
-from entities.cover_letter_model import CoverLetterDocument
-from services.cover_letter_service import insert_cover_letter, fetch_user_cover_letters, fetch_cover_letter, update_cover_letter
+import asyncio
+
+from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from entities.cover_letter_model import CoverLetterDocInfo, CoverLetterDocument
+from services import cover_letter_service
+from services.doc_service.html_to_pdf.playwright import PdfService
+from io import BytesIO
 
 cl_router = APIRouter(
     prefix="/cover-letter",
@@ -16,7 +22,7 @@ cl_router = APIRouter(
 async def create_cover_letter(
     cover_letter: CoverLetterDocument
 ):
-    return await insert_cover_letter(cover_letter)
+    return await cover_letter_service.insert_cover_letter(cover_letter)
 
 
 # -----------------------------------
@@ -27,7 +33,7 @@ async def create_cover_letter(
 async def get_user_cover_letters(
     user_id: str
 ):
-    return await fetch_user_cover_letters(user_id)
+    return await cover_letter_service.fetch_user_cover_letters(user_id)
 
 
 # -----------------------------------
@@ -38,7 +44,7 @@ async def get_user_cover_letters(
 async def get_cover_letter(
     cover_letter_id: str
 ):
-    return await fetch_cover_letter(cover_letter_id)
+    return await cover_letter_service.fetch_cover_letter(cover_letter_id)
     
 
 
@@ -51,4 +57,30 @@ async def edit_cover_letter(
     cover_letter_id: str,
     cover_letter_info: dict
 ):
-    return await update_cover_letter(cover_letter_id, cover_letter_info)
+    return await cover_letter_service.update_cover_letter(cover_letter_id, cover_letter_info)
+
+@cl_router.post("/preview")
+def render_doc(
+        cover_letter_doc_info : CoverLetterDocInfo
+):
+    return cover_letter_service.render_html(cover_letter_doc_info)
+
+class HtmlToPdfRequest(BaseModel):
+    html: str
+    
+@cl_router.post("/pdf")
+async def generate_cover_letter_pdf(
+    request: HtmlToPdfRequest
+):
+    pdf_bytes = await asyncio.get_event_loop().run_in_executor(
+        None, PdfService.html_to_pdf, request.html
+    )
+
+    return StreamingResponse(
+        BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition":
+            "attachment; filename=cover-letter.pdf"
+        }
+    )
