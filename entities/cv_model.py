@@ -239,6 +239,7 @@ class CvData(BaseModel):
     custom_sections: List[CvCustomSection] = []
 
 
+
 # -----------------------------
 # DOCUMENT
 # -----------------------------
