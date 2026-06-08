@@ -1,19 +1,25 @@
-from pydantic_settings import BaseSettings
-
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
 
 class Settings(BaseSettings):
+    # MongoDB
+    MONGO_URI: str = Field(..., description="MongoDB connection string")
 
-    MONGO_URI: str
-    SUPABASE_JWT_SECRET:str
-    AGENTIC_API_URL: str
-    AGENTIC_API_KEY: str
-    AUTH_ISSUER:str
-    AUTH_JWKS_URL:str
+    # Supabase
+    SUPABASE_URL: str = Field(..., description="Supabase project URL")
+    SUPABASE_ANON_KEY: str = Field(..., description="Supabase anonymous API key")
 
-    DEBUG: bool = False
+    # Agentic API
+    AGENTIC_API_URL: str = Field(..., description="Agentic API URL")
+    AGENTIC_API_KEY: str = Field(..., description="Agentic API key")
 
-    class Config:
-        env_file = ".env"
+    # Application
+    DEBUG: bool = Field(False, description="Enable debug mode")
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore" # Ignore extra env vars not defined here
+    )
 
 settings = Settings()
