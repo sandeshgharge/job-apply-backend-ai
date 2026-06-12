@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -13,6 +14,9 @@ from routes.profile_api import profile_router
 from routes.storage_api import storage_router
 from routes.jobs_api import jobs_router
 
+# Configure global logging
+logging.basicConfig(level=logging.INFO)
+
 app = FastAPI()
 
 class ExtractRequest(BaseModel):
@@ -26,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#app.add_middleware(SupabaseAuthMiddleware)
+app.add_middleware(SupabaseAuthMiddleware)
 app.include_router(cl_router)
 app.include_router(cv_router)
 app.include_router(auth_router)

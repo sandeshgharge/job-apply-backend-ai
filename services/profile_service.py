@@ -21,6 +21,7 @@ def get_profile(user_id: str, token: Optional[str]) -> ProfileInfo:
     except HTTPException:
         raise
     except Exception as e:
+        print("Error retrieving profile:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -34,8 +35,8 @@ def update_profile(user_id: str, profile_data: ProfileInfo, token: Optional[str]
         raise HTTPException(status_code=400, detail=str(e))
 
 
-def get_image_url(user_id: str, file_name: str, bucket: str, expires_in: int) -> dict:
-    supabase = get_supabase()
+def get_image_url(user_id: str, file_name: str, bucket: str, expires_in: int, token: Optional[str] = None) -> dict:
+    supabase = get_supabase(access_token=token)
     try:    
         response = supabase.storage.from_(bucket).create_signed_url(
             user_id + "/" + file_name, expires_in

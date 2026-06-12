@@ -7,9 +7,11 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import JSONResponse
 
+import sys
 from services.supabase_db_connection.supabase_client import get_supabase
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Routes that skip authentication (add more as needed)
 PUBLIC_PATHS: set[str] = {
@@ -17,7 +19,9 @@ PUBLIC_PATHS: set[str] = {
     "/health",
     "/docs",
     "/openapi.json",
-    "/redoc"
+    "/redoc",
+    "/auth/login",
+    "/auth/signup",
 }
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -41,7 +45,7 @@ async def require_user(
 
     supabase = get_supabase(credentials.credentials)
     try:
-        user_response = supabase.auth.get_user()
+        user_response = supabase.auth.get_user(credentials.credentials)
         if not user_response or not user_response.user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -84,16 +88,18 @@ class SupabaseAuthMiddleware(BaseHTTPMiddleware):
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
+
         token = auth_header.removeprefix("Bearer ").strip()
         supabase = get_supabase(token)
 
         try:
-            user_response = supabase.auth.get_user()
+            user_response = supabase.auth.get_user(token)
             if not user_response or not user_response.user:
                 raise ValueError("No user found for token")
                 
-            # Attach user to request state for use in route handlers
+            # Attach user and token to request state for use in route handlers
             request.state.user = user_response.user.model_dump()
+            request.state.token = token
         except Exception as exc:
             logger.warning("Supabase JWT validation failed: %s", exc)
             return JSONResponse(
