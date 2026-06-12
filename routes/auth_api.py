@@ -116,10 +116,10 @@ def get_session(authorization: Optional[str] = Header(None)):
     if authorization and authorization.startswith("Bearer "):
         token = authorization.replace("Bearer ", "")
         
-    supabase = get_supabase(token)
+    supabase = get_supabase()
     try:
         # get_user() is generally safer/better to validate the token on the backend
-        response = supabase.auth.get_user()
+        response = supabase.auth.get_user(token)
 
         if not response or not response.user:
             return {"session": None}
@@ -147,7 +147,7 @@ def set_password(
     if authorization and authorization.startswith("Bearer "):
         token = authorization.replace("Bearer ", "")
         
-    supabase = get_supabase(token)
+    supabase = get_supabase()
     try:
         supabase.auth.update_user({"password": request.new_password})
         return {"message": "Password updated successfully"}
