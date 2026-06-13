@@ -1,11 +1,9 @@
-import asyncio
-
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from entities.cover_letter_model import CoverLetterDocInfo, CoverLetterDocument
 from services import cover_letter_service
-from services.doc_service.html_to_pdf.playwright import PdfService
+from services import storage_service
 from io import BytesIO
 
 cl_router = APIRouter(
@@ -63,7 +61,7 @@ async def edit_cover_letter(
 def render_doc(
         cover_letter_doc_info : CoverLetterDocInfo
 ):
-    return cover_letter_service.render_html(cover_letter_doc_info)
+    return storage_service.render_html(cover_letter_doc_info)
 
 class HtmlToPdfRequest(BaseModel):
     html: str
@@ -72,9 +70,7 @@ class HtmlToPdfRequest(BaseModel):
 async def generate_cover_letter_pdf(
     request: HtmlToPdfRequest
 ):
-    pdf_bytes = await asyncio.get_event_loop().run_in_executor(
-        None, PdfService.html_to_pdf, request.html
-    )
+    pdf_bytes = await storage_service.generate_pdf(request.html)
 
     return StreamingResponse(
         BytesIO(pdf_bytes),
@@ -83,4 +79,4 @@ async def generate_cover_letter_pdf(
             "Content-Disposition":
             "attachment; filename=cover-letter.pdf"
         }
-    )
+    )

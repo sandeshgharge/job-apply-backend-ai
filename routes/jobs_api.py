@@ -1,60 +1,65 @@
 """
 Jobs API router.
 
-Proxies Supabase upsert operations for the `jobs` table.
+Proxies Supabase operations for the `jobs` table.
 """
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Optional
+from fastapi import APIRouter, File, HTTPException, Request, UploadFile
+from typing import List, Optional
 
-from services.supabase_db_connection.supabase_client import get_supabase
+from entities.cover_letter_model import CoverLetterDocInfo
+from entities.cv_model import CvData
+from entities.job_details import JobDetails
+import services.jobs_service as jobs_service
 
 jobs_router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
-
 # ---------------------------------------------------------------------------
-# Request models
-# ---------------------------------------------------------------------------
-
-class JobUpsertRequest(BaseModel):
-    id: str
-    user_id: str
-    company_name: Optional[str] = None
-    role: Optional[str] = None
-    company_location: Optional[str] = None
-    applied_date: Optional[str] = None
-    status: Optional[str] = None
-    salary: Optional[str] = None
-    contact_name: Optional[str] = None
-    job_url: Optional[str] = None
-    notes: Optional[str] = None
-    job_description: Optional[str] = None
-    cover_letter_pdf_url: Optional[str] = None
-    cv_pdf_url: Optional[str] = None
-
-
-# ---------------------------------------------------------------------------
-# POST /jobs/upsert
+# POST /jobs
 # ---------------------------------------------------------------------------
 
-@jobs_router.post("/upsert")
-def upsert_job(request: JobUpsertRequest):
-    supabase = get_supabase()
-    try:
-        data = request.model_dump(exclude_none=True)
+@jobs_router.post("", response_model=JobDetails)
+async def create_job(
+    request: Request,
+    jd: JobDetails,
+    cv_data: CvData,
+    cover_letter_data: CoverLetterDocInfo):
+    token = getattr(request.state, "token", None)
+    return await jobs_service.add_job(jd, token, cv_data, cover_letter_data)
 
-        response = (
-            supabase.table("jobs")
-            .upsert(data)
-            .execute()
-        )
+@jobs_router.post("/upsert", response_model=JobDetails)
+async def upsertJob(
+    request: Request,
+    jd: JobDetails
+):
+    token = getattr(request.state, "token", None)
+    return await jobs_service.add_job(jd, token)
 
-        # Return the id from the upserted row
-        row_id = request.id
-        if response.data and len(response.data) > 0:
-            row_id = response.data[0].get("id", request.id)
+# ---------------------------------------------------------------------------
+# PUT /jobs/{id}
+# ---------------------------------------------------------------------------
 
-        return {"message": "Job saved successfully", "id": row_id}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@jobs_router.put("/{id}", response_model=JobDetails)
+def update_job(id: str, request_data: JobDetails, request: Request):
+    token = getattr(request.state, "token", None)
+    return jobs_service.update_job(id, request_data, token)
+
+
+# ---------------------------------------------------------------------------
+# GET /jobs/user/{user_id}
+# ---------------------------------------------------------------------------
+
+@jobs_router.get("/user/{user_id}", response_model=List[JobDetails])
+def get_jobs_by_user(user_id: str, request: Request):
+    token = getattr(request.state, "token", None)
+    return jobs_service.get_jobs_by_user(user_id, token)
+
+
+# ---------------------------------------------------------------------------
+# DELETE /jobs/{job_id}
+# ---------------------------------------------------------------------------
+
+@jobs_router.delete("/{job_id}")
+def delete_job(job_id: str, request: Request):
+    token = getattr(request.state, "token", None)
+    return jobs_service.delete_job(job_id, token)
