@@ -3,7 +3,6 @@ from fastapi import HTTPException
 from pydantic import Field
 from entities.cover_letter_model import CoverLetterDocInfo, CoverLetterDocument
 from services.mongo_db_connection.db import cover_letter_collection
-from services.doc_service.template_management import template_env
 
 
 async def insert_cover_letter(cl_doc: CoverLetterDocument) -> CoverLetterDocument:
@@ -97,16 +96,3 @@ async def get_next_version(user_id: str) -> int:
         sort=[("version", -1)]
     )
     return (result["version"] + 1) if result else 1
-
-
-def render_html(
-        cover_letter: CoverLetterDocInfo
-    ) -> str:
-
-        template = template_env.get_template(
-            "cover_letter_default.html"
-        )
-
-        return template.render(
-            **cover_letter.model_dump()
-        )

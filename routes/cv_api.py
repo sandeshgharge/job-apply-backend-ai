@@ -1,11 +1,9 @@
-import asyncio
-
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from entities.cv_model import CVDocument, CvData
 import services.cv_service as cv_service
-from services.doc_service.html_to_pdf.playwright import PdfService
+from services import storage_service
 from io import BytesIO
 
 cv_router = APIRouter(prefix="/cv", tags=["CV"])
@@ -62,7 +60,7 @@ async def delete_cv(cv_id: str):
 
 @cv_router.post("/preview")
 def render_cv(cv_data: CvData):
-    return cv_service.render_html(cv_data)
+    return storage_service.render_html(cv_data)
 
 
 # -----------------------------------
@@ -74,9 +72,7 @@ class HtmlToPdfRequest(BaseModel):
 
 @cv_router.post("/pdf")
 async def generate_cv_pdf(request: HtmlToPdfRequest):
-    pdf_bytes = await asyncio.get_event_loop().run_in_executor(
-        None, PdfService.html_to_pdf, request.html
-    )
+    pdf_bytes = await storage_service.generate_pdf(request.html)
 
     return StreamingResponse(
         BytesIO(pdf_bytes),
@@ -85,4 +81,6 @@ async def generate_cv_pdf(request: HtmlToPdfRequest):
             "Content-Disposition":
             "attachment; filename=cv.pdf"
         }
-    )
+    )
+
+

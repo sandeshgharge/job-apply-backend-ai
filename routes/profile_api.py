@@ -21,7 +21,6 @@ profile_router = APIRouter(prefix="/profile", tags=["Profile"])
 @profile_router.get("/{user_id}", response_model=ProfileInfo)
 def get_profile(user_id: str, request: Request):
     token = getattr(request.state, "token", None)
-    print(f"Received request for profile of user_id: {user_id} with token: {token}")
     return profile_service.get_profile(user_id, token)
 
 

@@ -3,7 +3,6 @@ from fastapi import HTTPException
 from pydantic import Field
 from entities.cv_model import CVDocument, CvData
 from services.mongo_db_connection.db import cv_collection
-from services.doc_service.template_management import template_env
 
 
 async def create_cv(cv: CVDocument) -> CVDocument:
@@ -88,14 +87,4 @@ async def get_next_version(user_id: str) -> int:
         sort=[("version", -1)]
     )
     return (result["version"] + 1) if result else 1
-
-
-def render_html(cv_data: CvData) -> str:
-
-    template = template_env.get_template(
-        "cv_default.html"
-    )
-
-    return template.render(
-        **cv_data.model_dump()
-    )
+
