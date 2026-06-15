@@ -18,7 +18,7 @@ Rules:
 - Do NOT alter the JSON format
 - Empty String if contactName not mentioned
 - Every property name enclosed in double quotes
-- Maintain the JSON with no comments
+- JSON should NOT contain COMMENTS
 - Add categories in skillGroups as follows-
   1. 'Programming Languages'
   2. 'Language Frameworks'
