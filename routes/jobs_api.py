@@ -22,8 +22,8 @@ jobs_router = APIRouter(prefix="/jobs", tags=["Jobs"])
 async def create_job(
     request: Request,
     jd: JobDetails,
-    cv_data: CvData,
-    cover_letter_data: CoverLetterDocInfo):
+    cv_data: Optional[CvData]   ,
+    cover_letter_data: Optional[CoverLetterDocInfo]):
     token = getattr(request.state, "token", None)
     return await jobs_service.add_job(jd, token, cv_data, cover_letter_data)
 

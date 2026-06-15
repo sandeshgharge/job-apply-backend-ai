@@ -3,7 +3,7 @@ from config.env import settings
 
 AGENTIC_URL = settings.AGENTIC_API_URL
 AGENTIC_API_KEY = settings.AGENTIC_API_KEY
-MODEL_NAME = "mistral"
+MODEL_NAME = settings.MODEL_NAME
 
 
 def call_model(prompt: str) -> str:

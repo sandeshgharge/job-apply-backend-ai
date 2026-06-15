@@ -23,7 +23,7 @@ async def add_job(jd: JobDetails, token: Optional[str] = None, cv_data: Optional
         
         if cv_data is not None and cl_data is not None:
             user_id = jd.user_id
-            file_path = f"{user_id}/{job_id}"
+            file_path = f"{job_id}"
 
             # Render HTML (sync, fast) for both documents
             cv_html = storage_service.render_html(cv_data)
@@ -43,8 +43,8 @@ async def add_job(jd: JobDetails, token: Optional[str] = None, cv_data: Optional
 
             # Run both pipelines concurrently
             cv_public_url, cl_public_url = await asyncio.gather(
-                _generate_and_upload(cv_html, "resumes", "cv.pdf"),
-                _generate_and_upload(cl_html, "cover_letters", "cl.pdf"),
+                _generate_and_upload(cv_html, "apply-docs", "cv.pdf"),
+                _generate_and_upload(cl_html, "apply-docs", "cl.pdf"),
             )
 
             # Update DB with the actual uploaded URLs
