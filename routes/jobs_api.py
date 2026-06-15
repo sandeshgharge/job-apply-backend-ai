@@ -9,7 +9,7 @@ from typing import List, Optional
 
 from entities.cover_letter_model import CoverLetterDocInfo
 from entities.cv_model import CvData
-from entities.job_details import JobDetails
+from entities.job_details import JobDetails, JobDetailsUpdate
 import services.jobs_service as jobs_service
 
 jobs_router = APIRouter(prefix="/jobs", tags=["Jobs"])
@@ -39,8 +39,8 @@ async def upsertJob(
 # PUT /jobs/{id}
 # ---------------------------------------------------------------------------
 
-@jobs_router.put("/{id}", response_model=JobDetails)
-def update_job(id: str, request_data: JobDetails, request: Request):
+@jobs_router.patch("/{id}")
+def update_job(id: str, request_data: JobDetailsUpdate, request: Request):
     token = getattr(request.state, "token", None)
     return jobs_service.update_job(id, request_data, token)
 
