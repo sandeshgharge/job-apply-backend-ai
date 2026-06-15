@@ -16,12 +16,10 @@ def get_profile(user_id: str, token: Optional[str]) -> ProfileInfo:
         )
         if not response.data:
             raise HTTPException(status_code=404, detail="User not found")
-        print("Profile data retrieved:", response.data)
         return ProfileInfo.model_validate(response.data)
     except HTTPException:
         raise
     except Exception as e:
-        print("Error retrieving profile:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 

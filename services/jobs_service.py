@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from typing import Optional, List
 from entities.cover_letter_model import CoverLetterDocInfo
 from entities.cv_model import CvData
-from entities.job_details import JobDetails
+from entities.job_details import JobDetails, JobDetailsUpdate
 from services.storage_service import upload_file_to_storage
 from services import storage_service
 from services.supabase_db_connection.supabase_client import get_supabase
@@ -58,7 +58,7 @@ async def add_job(jd: JobDetails, token: Optional[str] = None, cv_data: Optional
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def update_job(id: str, request_data: JobDetails, token: Optional[str]) -> dict:
+def update_job(id: str, request_data: JobDetailsUpdate, token: Optional[str]) -> dict:
     supabase = get_supabase(access_token=token)
     try:
         data = request_data.model_dump(exclude_none=True)
