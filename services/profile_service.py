@@ -20,6 +20,7 @@ def get_profile(user_id: str, token: Optional[str]) -> ProfileInfo:
     except HTTPException:
         raise
     except Exception as e:
+        print("Error retrieving profile:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 

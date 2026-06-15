@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     # Agentic API
     AGENTIC_API_URL: str = Field(..., description="Agentic API URL")
     AGENTIC_API_KEY: str = Field(..., description="Agentic API key")
+    MODEL_NAME: str = Field("mistral", description="LLM model name for the Agentic API")
 
     # Application
     DEBUG: bool = Field(False, description="Enable debug mode")

@@ -6,10 +6,11 @@ def extract_job(url: str):
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
+        print("Extracting job from url: ", url)
         page.goto(url, timeout=60000)
 
         # Wait for content to load
-        page.wait_for_load_state("networkidle")
+        page.wait_for_load_state("networkidle", timeout=60000)
 
         # Try common job description selectors
         selectors = [
@@ -25,7 +26,7 @@ def extract_job(url: str):
         for sel in selectors:
             try:
                 element = page.locator(sel).first
-                text = element.inner_text(timeout=3000)
+                text = element.inner_text(timeout=10000)
                 if len(text) > 200:  # basic quality check
                     content = text
                     break
@@ -34,7 +35,7 @@ def extract_job(url: str):
 
         # Fallback: get full page text
         if not content:
-            content = page.locator("body").inner_text()
+            content = page.locator("body").inner_text(timeout=15000)
 
         browser.close()
 
