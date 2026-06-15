@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from middleware.supabase_middleware import SupabaseAuthMiddleware
-from services.model_connection.send_prompt import call_model
+from services.model_connection import send_prompt
+from services.model_connection import groq_connection
 from services.scraper_service import extract_job
 from services.ai_service import extract_job_data
 from routes.cover_letter_api import cl_router
@@ -42,7 +43,8 @@ app.include_router(jobs_router)
 @app.post("/generate")
 async def generate(request: Request):
     body = await request.json()
-    data = call_model(body.get("prompt"))
+    #data = send_prompt.call_model(body.get("prompt"))
+    data = groq_connection.call_model(body.get("prompt"))
     return {"output": data}
 
 @app.post("/extract-job-data")
