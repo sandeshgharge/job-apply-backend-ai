@@ -1,442 +1,512 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ personal_info.first_name }} {{ personal_info.last_name }} – CV</title>
-
+<meta charset="UTF-8">
+<title>{{ personal_info.first_name }} {{ personal_info.last_name }} — CV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    @page {
-        size: A4;
-        margin: 0;
-    }
 
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
+  /* ============ TOKENS ============ */
+  :root{
+    --ink:        #1c2530;
+    --muted:      #5b6472;
+    --faint:      #8993a1;
+    --accent:     #2a5c8a;
+    --accent-deep:#1d4567;
+    --accent-tint:#eaf1f7;
+    --divider:    #dbe1e7;
+    --paper:      #ffffff;
+  }
 
-    body {
-        font-family: Calibri, Arial, sans-serif;
-        font-size: 10pt;
-        line-height: 1.5;
-        color: #2d2d2d;
-    }
+  /* ============ RESET / PAGE ============ */
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 10.3pt;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  @page{
+    size: A4;
+    margin: 16mm 17mm;
+  }
+  .page{
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  a{ color: var(--accent-deep); text-decoration: none; }
+  ul{ margin: 0; padding: 0; }
+  p{ margin: 0; }
 
-    .cv-wrapper {
-        display: flex;
-        min-height: 100vh;
-    }
+  /* ============ HEADER ============ */
+  .header{
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 14px;
+    border-bottom: 2.5px solid var(--ink);
+    margin-bottom: 16px;
+  }
+  .monogram{
+    flex: 0 0 auto;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 600;
+    font-size: 19pt;
+    letter-spacing: 1px;
+  }
+  .header-text{ flex: 1 1 auto; min-width: 0; }
+  .name{
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 600;
+    font-size: 24pt;
+    letter-spacing: 0.3px;
+    color: var(--ink);
+    margin: 0 0 1px 0;
+  }
+  .headline{
+    color: var(--accent-deep);
+    font-size: 10.5pt;
+    font-weight: 500;
+    margin-bottom: 7px;
+  }
+  .meta-row{
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 9.3pt;
+    color: var(--muted);
+  }
+  .meta-row .item{
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    margin-right: 14px;
+    margin-bottom: 3px;
+  }
+  .meta-row .item svg{ margin-right: 5px; }
+  .meta-row svg{ width: 11px; height: 11px; flex: none; fill: var(--accent); }
+  .meta-row a{ color: var(--muted); }
 
-    /* ── Sidebar ── */
-    .sidebar {
-        width: 35%;
-        background-color: #1a2744;
-        color: #e4e8ef;
-        padding: 36px 22px 40px;
-        flex-shrink: 0;
-    }
+  /* ============ SECTION SHELL ============ */
+  section{ margin-bottom: 14px; }
+  section:last-child{ margin-bottom: 0; }
+  h2{
+    font-family: 'Inter', sans-serif;
+    font-size: 10.3pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    color: var(--ink);
+    margin: 0 0 8px 0;
+    padding-bottom: 4px;
+    border-bottom: 1.4px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  h2::before{
+    content: "";
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    display: inline-block;
+    flex: none;
+  }
 
-    .photo-wrapper {
-        text-align: center;
-        margin-bottom: 24px;
-    }
+  /* ============ SUMMARY ============ */
+  .summary p{ color: var(--ink); font-size: 10pt; }
 
-    .photo-wrapper img {
-        width: 130px;
-        height: 130px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #4a90d9;
-    }
+  /* ============ SKILLS ============ */
+  .skill-row{
+    display: flex;
+    margin-bottom: 6px;
+    align-items: baseline;
+  }
+  .skill-row:last-child{ margin-bottom: 0; }
+  .skill-label{
+    flex: 0 0 78px;
+    font-weight: 700;
+    font-size: 9.3pt;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--accent-deep);
+    margin-right: 10px;
+  }
+  .tag-group{ display: flex; flex-wrap: wrap; flex: 1; }
+  .tag{
+    background: var(--accent-tint);
+    color: var(--accent-deep);
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 9pt;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-right: 5px;
+    margin-bottom: 4px;
+  }
 
-    .sidebar-name {
-        text-align: center;
-        font-size: 16pt;
-        font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 2px;
-    }
+  /* ============ ENTRY (experience / education / projects / etc.) ============ */
+  .entry{
+    margin-bottom: 11px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .entry:last-child{ margin-bottom: 0; }
+  .entry-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .entry-title{
+    font-weight: 700;
+    font-size: 10.3pt;
+    color: var(--ink);
+  }
+  .entry-sub{
+    color: var(--muted);
+    font-size: 9.6pt;
+  }
+  .entry-dates{
+    flex: none;
+    font-size: 9pt;
+    font-style: italic;
+    color: var(--faint);
+    white-space: nowrap;
+  }
+  .entry-org{
+    font-size: 9.6pt;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+  .entry-desc{
+    font-size: 9.6pt;
+    color: var(--ink);
+    margin-top: 4px;
+  }
+  ul.bullet-list{
+    margin-top: 5px;
+    padding-left: 16px;
+  }
+  ul.bullet-list li{
+    font-size: 9.6pt;
+    margin-bottom: 3px;
+    color: var(--ink);
+  }
+  ul.bullet-list li::marker{ color: var(--accent); }
 
-    .sidebar-headline {
-        text-align: center;
-        font-size: 9pt;
-        color: #94a7c8;
-        margin-bottom: 24px;
-        letter-spacing: 0.5px;
-    }
+  .link-line{ font-size: 9.3pt; margin-top: 3px; }
+  .link-line a{ word-break: break-all; }
 
-    .sidebar-section-title {
-        font-size: 10pt;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: #4a90d9;
-        border-bottom: 1px solid #2e4060;
-        padding-bottom: 4px;
-        margin-bottom: 10px;
-        margin-top: 20px;
-    }
+  /* ============ TWO-COLUMN GRID (certifications / awards / references) ============ */
+  .grid-2{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 18px;
+  }
+  .card{
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .card-title{ font-weight: 700; font-size: 9.8pt; color: var(--ink); }
+  .card-sub{ font-size: 9.2pt; color: var(--muted); }
+  .card-meta{ font-size: 8.8pt; color: var(--faint); margin-top: 1px; }
 
-    .contact-list {
-        list-style: none;
-    }
+  /* ============ INTERESTS ============ */
+  .interest-tags{ display: flex; flex-wrap: wrap; }
+  .interest-tag{
+    border: 1px solid var(--divider);
+    color: var(--ink);
+    border-radius: 3px;
+    padding: 2px 9px;
+    font-size: 9pt;
+    margin-right: 6px;
+    margin-bottom: 5px;
+  }
 
-    .contact-list li {
-        margin-bottom: 6px;
-        font-size: 9pt;
-        word-break: break-all;
-    }
+  /* ============ CUSTOM SECTIONS ============ */
+  .custom-list{ padding-left: 16px; }
+  .custom-list li{ font-size: 9.6pt; margin-bottom: 3px; color: var(--ink); }
 
-    .contact-label {
-        font-weight: 600;
-        color: #8eadd4;
-        display: block;
-        font-size: 8pt;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    /* Skills */
-    .skill-category {
-        margin-bottom: 10px;
-    }
-
-    .skill-category-name {
-        font-size: 8.5pt;
-        font-weight: 600;
-        color: #8eadd4;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        margin-bottom: 3px;
-    }
-
-    .skill-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
-
-    .skill-tag {
-        background-color: #2e4060;
-        color: #cdd9ea;
-        font-size: 8pt;
-        padding: 2px 8px;
-        border-radius: 3px;
-    }
-
-    /* Languages */
-    .language-item {
-        margin-bottom: 4px;
-        font-size: 9pt;
-    }
-
-    .language-proficiency {
-        color: #8eadd4;
-        font-size: 8pt;
-    }
-
-    /* ── Main Content ── */
-    .main-content {
-        flex: 1;
-        padding: 36px 32px 40px;
-    }
-
-    .main-name {
-        font-size: 22pt;
-        font-weight: 700;
-        color: #1a2744;
-        margin-bottom: 2px;
-    }
-
-    .main-headline {
-        font-size: 11pt;
-        color: #6b7b96;
-        margin-bottom: 18px;
-        letter-spacing: 0.3px;
-    }
-
-    .section {
-        margin-bottom: 20px;
-    }
-
-    .section-title {
-        font-size: 12pt;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: #1a2744;
-        border-bottom: 2px solid #4a90d9;
-        padding-bottom: 4px;
-        margin-bottom: 12px;
-    }
-
-    /* Summary */
-    .summary-text {
-        font-size: 10pt;
-        color: #3d3d3d;
-        text-align: justify;
-        line-height: 1.6;
-    }
-
-    /* Experience / Education entries */
-    .entry {
-        margin-bottom: 14px;
-    }
-
-    .entry-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        flex-wrap: wrap;
-    }
-
-    .entry-title {
-        font-size: 11pt;
-        font-weight: 700;
-        color: #1a2744;
-    }
-
-    .entry-date {
-        font-size: 9pt;
-        color: #6b7b96;
-        white-space: nowrap;
-    }
-
-    .entry-subtitle {
-        font-size: 9.5pt;
-        color: #4a6a8a;
-        margin-bottom: 4px;
-    }
-
-    .entry-location {
-        font-size: 9pt;
-        color: #888;
-        font-style: italic;
-    }
-
-    .responsibilities {
-        list-style: disc;
-        margin-left: 18px;
-        margin-top: 4px;
-    }
-
-    .responsibilities li {
-        font-size: 9.5pt;
-        color: #3d3d3d;
-        margin-bottom: 2px;
-        line-height: 1.5;
-    }
 </style>
-
 </head>
 <body>
+<div class="page">
 
-<div class="cv-wrapper">
+  <!-- ============ HEADER ============ -->
+  <div class="header">
+    <div class="monogram">{{ personal_info.first_name[0]|upper }}{{ personal_info.last_name[0]|upper }}</div>
+    <div class="header-text">
+      <p class="name">{{ personal_info.first_name }} {{ personal_info.last_name|upper }}</p>
+      {% if personal_info.headline %}<p class="headline">{{ personal_info.headline }}</p>{% endif %}
 
-    <!-- ═══════ SIDEBAR ═══════ -->
-    <div class="sidebar">
-
-        <!-- Photo -->
-        {% if photo_url %}
-        <div class="photo-wrapper">
-            <img src="{{ photo_url }}" alt="Photo of {{ personal_info.first_name }} {{ personal_info.last_name }}">
-        </div>
+      <div class="meta-row">
+        <span class="item">
+          <svg viewBox="0 0 24 24"><path d="M2 4h20v16H2V4zm2 2v.01L12 13l8-6.99V6H4zm16 12V8.24l-8 7-8-7V18h16z"/></svg>
+          {{ personal_info.email }}
+        </span>
+        {% if personal_info.phone %}
+        <span class="item">
+          <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.9 15.9 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11 11 0 0 0 3.4.55 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11 11 0 0 0 .55 3.4 1 1 0 0 1-.25 1z"/></svg>
+          {{ personal_info.phone }}
+        </span>
+        {% endif %}
+        {% if personal_info.address %}
+        <span class="item">
+          <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+          {{ personal_info.address }}
+        </span>
         {% endif %}
 
-        <div class="sidebar-name">{{ personal_info.first_name }} {{ personal_info.last_name }}</div>
-        {% if personal_info.headline %}
-        <div class="sidebar-headline">{{ personal_info.headline }}</div>
+        {% if personal_info.links %}
+          {% if personal_info.links.linkedin %}
+          <span class="item"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM3 9h4v12H3V9zm6.5 0h3.8v1.7h.05c.53-.95 1.84-1.95 3.78-1.95 4.04 0 4.79 2.55 4.79 5.86V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.45-2.16 2.96V21h-4V9z"/></svg><a href="{{ personal_info.links.linkedin }}">LinkedIn</a></span>
+          {% endif %}
+          {% if personal_info.links.github %}
+          <span class="item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.3 6.84 9.65.5.1.68-.22.68-.49v-1.9c-2.78.62-3.37-1.36-3.37-1.36-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.36 1.12 2.94.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.13-4.56-5.02 0-1.11.39-2.02 1.03-2.73-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.9-1.32 2.75-1.05 2.75-1.05.55 1.42.2 2.47.1 2.73.64.71 1.03 1.62 1.03 2.73 0 3.9-2.35 4.76-4.58 5.02.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2z"/></svg><a href="{{ personal_info.links.github }}">GitHub</a></span>
+          {% endif %}
+          {% if personal_info.links.portfolio %}
+          <span class="item"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-3.18a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.1 1.5 2.43 1.94 3.96h-3.88c.44-1.53 1.11-2.86 1.94-3.96zM4.26 14a8.2 8.2 0 0 1 0-4h3.6a16.7 16.7 0 0 0 0 4h-3.6zm.81 2h3.18A15.6 15.6 0 0 0 9.63 19.56 8.03 8.03 0 0 1 5.07 16zm3.18-8H5.07a8.03 8.03 0 0 1 4.56-3.56A15.6 15.6 0 0 0 8.25 8zM12 19.96c-.83-1.1-1.5-2.43-1.94-3.96h3.88c-.44 1.53-1.11 2.86-1.94 3.96zM14.45 14H9.55a14.5 14.5 0 0 1 0-4h4.9a14.5 14.5 0 0 1 0 4zm.12 5.56A15.6 15.6 0 0 0 15.95 16h3.18a8.03 8.03 0 0 1-4.56 3.56zM16.34 14a16.7 16.7 0 0 0 0-4h3.6a8.2 8.2 0 0 1 0 4h-3.6z"/></svg><a href="{{ personal_info.links.portfolio }}">Portfolio</a></span>
+          {% endif %}
+          {% if personal_info.links.website %}
+          <span class="item"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-3.18a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.1 1.5 2.43 1.94 3.96h-3.88c.44-1.53 1.11-2.86 1.94-3.96zM4.26 14a8.2 8.2 0 0 1 0-4h3.6a16.7 16.7 0 0 0 0 4h-3.6zm.81 2h3.18A15.6 15.6 0 0 0 9.63 19.56 8.03 8.03 0 0 1 5.07 16zm3.18-8H5.07a8.03 8.03 0 0 1 4.56-3.56A15.6 15.6 0 0 0 8.25 8zM12 19.96c-.83-1.1-1.5-2.43-1.94-3.96h3.88c-.44 1.53-1.11 2.86-1.94 3.96zM14.45 14H9.55a14.5 14.5 0 0 1 0-4h4.9a14.5 14.5 0 0 1 0 4zm.12 5.56A15.6 15.6 0 0 0 15.95 16h3.18a8.03 8.03 0 0 1-4.56 3.56zM16.34 14a16.7 16.7 0 0 0 0-4h3.6a8.2 8.2 0 0 1 0 4h-3.6z"/></svg><a href="{{ personal_info.links.website }}">Website</a></span>
+          {% endif %}
         {% endif %}
 
-        <!-- Contact -->
-        <div class="sidebar-section-title">Contact</div>
-        <ul class="contact-list">
-            <li>
-                <span class="contact-label">Email</span>
-                {{ personal_info.email }}
-            </li>
-            {% if personal_info.phone %}
-            <li>
-                <span class="contact-label">Phone</span>
-                {{ personal_info.phone }}
-            </li>
-            {% endif %}
-            {% if personal_info.address %}
-            <li>
-                <span class="contact-label">Address</span>
-                {{ personal_info.address }}
-            </li>
-            {% endif %}
-            {% if personal_info.links %}
-                {% if personal_info.links.linkedin %}
-                <li>
-                    <span class="contact-label">LinkedIn</span>
-                    {{ personal_info.links.linkedin }}
-                </li>
-                {% endif %}
-                {% if personal_info.links.github %}
-                <li>
-                    <span class="contact-label">GitHub</span>
-                    {{ personal_info.links.github }}
-                </li>
-                {% endif %}
-                {% if personal_info.links.portfolio %}
-                <li>
-                    <span class="contact-label">Portfolio</span>
-                    {{ personal_info.links.portfolio }}
-                </li>
-                {% endif %}
-                {% if personal_info.links.website %}
-                <li>
-                    <span class="contact-label">Website</span>
-                    {{ personal_info.links.website }}
-                </li>
-                {% endif %}
-            {% endif %}
-        </ul>
-
-        <!-- Skills -->
-        {% if skills %}
-        <div class="sidebar-section-title">Skills</div>
-
-            {% if skills.technical %}
-            <div class="skill-category">
-                <div class="skill-category-name">Technical</div>
-                <div class="skill-tags">
-                    {% for skill in skills.technical %}
-                    <span class="skill-tag">{{ skill }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if skills.frameworks %}
-            <div class="skill-category">
-                <div class="skill-category-name">Frameworks</div>
-                <div class="skill-tags">
-                    {% for skill in skills.frameworks %}
-                    <span class="skill-tag">{{ skill }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if skills.tools %}
-            <div class="skill-category">
-                <div class="skill-category-name">Tools</div>
-                <div class="skill-tags">
-                    {% for skill in skills.tools %}
-                    <span class="skill-tag">{{ skill }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if skills.soft %}
-            <div class="skill-category">
-                <div class="skill-category-name">Soft Skills</div>
-                <div class="skill-tags">
-                    {% for skill in skills.soft %}
-                    <span class="skill-tag">{{ skill }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if skills.languages %}
-            <div class="skill-category">
-                <div class="skill-category-name">Languages</div>
-                {% for lang in skills.languages %}
-                <div class="language-item">
-                    {{ lang.language }}
-                    <span class="language-proficiency">– {{ lang.proficiency }}</span>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
+        {# ---- Optional languages slot ----
+             CvData currently has no `languages` field even though CvLanguage exists.
+             If you add `languages: List[CvLanguage] = []` to CvData, uncomment this block
+             and it will render e.g. "English – C1  ·  German – B1" in the header. ----
+        {% if languages %}
+        <span class="item">
+          {% for lang in languages %}{{ lang.language }} – {{ lang.proficiency }}{% if not loop.last %} &nbsp;·&nbsp; {% endif %}{% endfor %}
+        </span>
         {% endif %}
+        #}
+      </div>
     </div>
+  </div>
 
-    <!-- ═══════ MAIN CONTENT ═══════ -->
-    <div class="main-content">
+  <!-- ============ SUMMARY ============ -->
+  {% if summary %}
+  <section class="summary">
+    <p>{{ summary }}</p>
+  </section>
+  {% endif %}
 
-        <div class="main-name">{{ personal_info.first_name }} {{ personal_info.last_name }}</div>
-        {% if personal_info.headline %}
-        <div class="main-headline">{{ personal_info.headline }}</div>
-        {% endif %}
-
-        <!-- Summary -->
-        {% if summary %}
-        <div class="section">
-            <div class="section-title">Professional Summary</div>
-            <div class="summary-text">{{ summary }}</div>
-        </div>
-        {% endif %}
-
-        <!-- Experience -->
-        {% if experience %}
-        <div class="section">
-            <div class="section-title">Experience</div>
-            {% for exp in experience %}
-                {% if exp.include %}
-                <div class="entry">
-                    <div class="entry-header">
-                        <span class="entry-title">{{ exp.job_title }}</span>
-                        <span class="entry-date">
-                            {% if exp.start_date %}{{ exp.start_date }}{% endif %}
-                            {% if exp.start_date and (exp.end_date or exp.current) %} – {% endif %}
-                            {% if exp.current %}Present{% elif exp.end_date %}{{ exp.end_date }}{% endif %}
-                        </span>
-                    </div>
-                    <div class="entry-subtitle">
-                        {{ exp.company }}
-                        {% if exp.location %}<span class="entry-location"> | {{ exp.location }}</span>{% endif %}
-                    </div>
-                    {% if exp.responsibilities %}
-                    <ul class="responsibilities">
-                        {% for resp in exp.responsibilities %}
-                            {% if resp.include %}
-                            <li>{{ resp.text }}</li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <!-- Education -->
-        {% if education %}
-        <div class="section">
-            <div class="section-title">Education</div>
-            {% for edu in education %}
-                {% if edu.include %}
-                <div class="entry">
-                    <div class="entry-header">
-                        <span class="entry-title">{{ edu.degree }}{% if edu.field_of_study %} in {{ edu.field_of_study }}{% endif %}</span>
-                        <span class="entry-date">
-                            {% if edu.start_date %}{{ edu.start_date }}{% endif %}
-                            {% if edu.start_date and edu.end_date %} – {% endif %}
-                            {% if edu.end_date %}{{ edu.end_date }}{% endif %}
-                        </span>
-                    </div>
-                    <div class="entry-subtitle">
-                        {{ edu.institution }}
-                        {% if edu.location %}<span class="entry-location"> | {{ edu.location }}</span>{% endif %}
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
-
+  <!-- ============ SKILLS ============ -->
+  {% if skills and (skills.frontend or skills.backend or skills.devops) %}
+  <section>
+    <h2>Skills</h2>
+    {% if skills.frontend %}
+    <div class="skill-row">
+      <span class="skill-label">Frontend</span>
+      <div class="tag-group">{% for s in skills.frontend %}<span class="tag">{{ s }}</span>{% endfor %}</div>
     </div>
+    {% endif %}
+    {% if skills.backend %}
+    <div class="skill-row">
+      <span class="skill-label">Backend</span>
+      <div class="tag-group">{% for s in skills.backend %}<span class="tag">{{ s }}</span>{% endfor %}</div>
+    </div>
+    {% endif %}
+    {% if skills.devops %}
+    <div class="skill-row">
+      <span class="skill-label">DevOps</span>
+      <div class="tag-group">{% for s in skills.devops %}<span class="tag">{{ s }}</span>{% endfor %}</div>
+    </div>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <!-- ============ EXPERIENCE ============ -->
+  {% set exps = experience|selectattr('include')|list %}
+  {% if exps %}
+  <section>
+    <h2>Work Experience</h2>
+    {% for exp in exps %}
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">{{ exp.job_title }}</span>
+        <span class="entry-dates">{{ exp.start_date or '' }} – {{ 'Present' if exp.current else (exp.end_date or '') }}</span>
+      </div>
+      <p class="entry-org">{{ exp.company }}{% if exp.location %}, {{ exp.location }}{% endif %}</p>
+      {% set resps = exp.responsibilities|selectattr('include')|list %}
+      {% if resps %}
+      <ul class="bullet-list">
+        {% for r in resps %}<li>{{ r.text }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <!-- ============ EDUCATION ============ -->
+  {% set edus = education|selectattr('include')|list %}
+  {% if edus %}
+  <section>
+    <h2>Education</h2>
+    {% for edu in edus %}
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">{{ edu.degree }}{% if edu.field_of_study %} — {{ edu.field_of_study }}{% endif %}</span>
+        <span class="entry-dates">{{ edu.start_date or '' }} – {{ edu.end_date or '' }}</span>
+      </div>
+      <p class="entry-org">{{ edu.institution }}{% if edu.location %}, {{ edu.location }}{% endif %}</p>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <!-- ============ PROJECTS ============ -->
+  {% set projs = projects|selectattr('include')|list %}
+  {% if projs %}
+  <section>
+    <h2>Projects</h2>
+    {% for p in projs %}
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">{{ p.title }}{% if p.role %} — {{ p.role }}{% endif %}</span>
+        {% if p.start_date or p.end_date %}<span class="entry-dates">{{ p.start_date or '' }} – {{ p.end_date or '' }}</span>{% endif %}
+      </div>
+      {% if p.description %}<p class="entry-desc">{{ p.description }}</p>{% endif %}
+      {% if p.technologies %}
+      <div class="tag-group" style="margin-top:5px;">{% for t in p.technologies %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+      {% endif %}
+      {% if p.link %}<p class="link-line"><a href="{{ p.link }}">{{ p.link }}</a></p>{% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <!-- ============ CERTIFICATIONS ============ -->
+  {% set certs = certifications|selectattr('include')|list %}
+  {% if certs %}
+  <section>
+    <h2>Certifications</h2>
+    <div class="grid-2">
+      {% for c in certs %}
+      <div class="card">
+        <p class="card-title">{{ c.name }}</p>
+        {% if c.issuer %}<p class="card-sub">{{ c.issuer }}</p>{% endif %}
+        <p class="card-meta">
+          {%- if c.issue_date %}Issued {{ c.issue_date }}{% endif -%}
+          {%- if c.expiry_date %} · Expires {{ c.expiry_date }}{% endif -%}
+          {%- if c.credential_id %} · ID: {{ c.credential_id }}{% endif -%}
+        </p>
+        {% if c.credential_url %}<p class="link-line"><a href="{{ c.credential_url }}">{{ c.credential_url }}</a></p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ============ AWARDS ============ -->
+  {% set awards = awards|selectattr('include')|list %}
+  {% if awards %}
+  <section>
+    <h2>Awards</h2>
+    <div class="grid-2">
+      {% for a in awards %}
+      <div class="card">
+        <p class="card-title">{{ a.title }}</p>
+        {% if a.issuer or a.date %}<p class="card-sub">{{ a.issuer or '' }}{% if a.issuer and a.date %} · {% endif %}{{ a.date or '' }}</p>{% endif %}
+        {% if a.description %}<p class="card-meta">{{ a.description }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ============ PUBLICATIONS ============ -->
+  {% set pubs = publications|selectattr('include')|list %}
+  {% if pubs %}
+  <section>
+    <h2>Publications</h2>
+    {% for pub in pubs %}
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">{{ pub.title }}</span>
+        {% if pub.date %}<span class="entry-dates">{{ pub.date }}</span>{% endif %}
+      </div>
+      {% if pub.publisher %}<p class="entry-org">{{ pub.publisher }}</p>{% endif %}
+      {% if pub.description %}<p class="entry-desc">{{ pub.description }}</p>{% endif %}
+      {% if pub.link %}<p class="link-line"><a href="{{ pub.link }}">{{ pub.link }}</a></p>{% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <!-- ============ VOLUNTEER EXPERIENCE ============ -->
+  {% set vols = volunteer_experience|selectattr('include')|list %}
+  {% if vols %}
+  <section>
+    <h2>Volunteer Experience</h2>
+    {% for v in vols %}
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">{{ v.role }}</span>
+        <span class="entry-dates">{{ v.start_date or '' }} – {{ v.end_date or '' }}</span>
+      </div>
+      <p class="entry-org">{{ v.organization }}{% if v.location %}, {{ v.location }}{% endif %}</p>
+      {% if v.description %}<p class="entry-desc">{{ v.description }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <!-- ============ INTERESTS ============ -->
+  {% if interests %}
+  <section>
+    <h2>Interests</h2>
+    <div class="interest-tags">
+      {% for i in interests %}<span class="interest-tag">{{ i }}</span>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ============ REFERENCES ============ -->
+  {% set refs = references|selectattr('include')|list %}
+  {% if refs %}
+  <section>
+    <h2>References</h2>
+    <div class="grid-2">
+      {% for r in refs %}
+      <div class="card">
+        <p class="card-title">{{ r.name }}</p>
+        {% if r.position or r.company %}<p class="card-sub">{{ r.position or '' }}{% if r.position and r.company %}, {% endif %}{{ r.company or '' }}</p>{% endif %}
+        {% if r.email or r.phone %}<p class="card-meta">{{ r.email or '' }}{% if r.email and r.phone %} · {% endif %}{{ r.phone or '' }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ============ CUSTOM SECTIONS ============ -->
+  {% for cs in custom_sections if cs.include %}
+    {% set cs_items = cs.items|selectattr('include')|list %}
+    {% if cs_items %}
+    <section>
+      <h2>{{ cs.section_title }}</h2>
+      <ul class="custom-list">
+        {% for item in cs_items %}<li>{{ item.text }}</li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  {% endfor %}
+
 </div>
-
 </body>
 </html>
