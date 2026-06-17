@@ -47,11 +47,9 @@ class CvLanguage(BaseModel):
 class CvSkills(BaseModel):
     model_config = camel_config
 
-    technical: List[str] = []
-    soft: List[str] = []
-    tools: List[str] = []
-    frameworks: List[str] = []
-    languages: List[CvLanguage] = []
+    frontend: List[str] = []
+    backend: List[str] = []
+    devops: List[str] = []
 
 
 # -----------------------------
