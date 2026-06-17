@@ -15,7 +15,7 @@ logger.setLevel(logging.INFO)
 
 # Routes that skip authentication (add more as needed)
 PUBLIC_PATHS: set[str] = {
-    "/",
+    "/hello",
     "/health",
     "/docs",
     "/openapi.json",
