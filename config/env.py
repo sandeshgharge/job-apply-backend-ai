@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = Field(..., description="Groq API key")
     GROQ_MODEL: str = Field("llama-3.1-8b-instant", description="Groq LLM model name")
 
+    FRONTEND_URL: str = Field(..., description="Front end url")
+
     # Application
     DEBUG: bool = Field(False, description="Enable debug mode")
 

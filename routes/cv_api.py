@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from entities.cv_model import CVDocument, CvData
@@ -83,4 +83,4 @@ async def generate_cv_pdf(request: HtmlToPdfRequest):
         }
     )
 
-
+

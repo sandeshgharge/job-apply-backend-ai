@@ -22,6 +22,10 @@ PUBLIC_PATHS: set[str] = {
     "/redoc",
     "/auth/login",
     "/auth/signup",
+    "/auth/callback",
+    "/favicon.ico",
+    "/auth/set-password/page",
+    "/auth/set-first-time-password"
 }
 
 bearer_scheme = HTTPBearer(auto_error=False)

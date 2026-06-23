@@ -4,10 +4,13 @@ Authentication API router.
 Proxies Supabase Auth calls: login, signup, logout, session, and password update.
 """
 
-from fastapi import APIRouter, HTTPException, Header
+from os import access
+
+from fastapi import APIRouter, HTTPException, Header, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from typing import Optional
-
+from config.env import settings
 from services.supabase_db_connection.supabase_client import get_supabase
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -147,7 +150,137 @@ def set_password(
     if authorization and authorization.startswith("Bearer "):
         token = authorization.replace("Bearer ", "")
         
-    supabase = get_supabase()
+    supabase = get_supabase(access_token=token)
+    try:
+        supabase.auth.update_user({"password": request.new_password})
+        return {"message": "Password updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@auth_router.get("/callback")
+def handle_callback(request: Request):
+    return HTMLResponse("""
+    <script>
+      const params = new URLSearchParams(window.location.hash.substring(1));
+      const access_token = params.get('access_token');
+      const refresh_token = params.get('refresh_token');
+      
+      window.location.href = 
+        `/auth/set-password/page?access_token=${access_token}&refresh_token=${refresh_token}`;
+    </script>
+    """)
+
+@auth_router.get("/set-password/page")
+def set_password_page(access_token: str, refresh_token: str):
+    return HTMLResponse(f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Set Password</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; display: flex; 
+                    justify-content: center; align-items: center; 
+                    height: 100vh; margin: 0; background: #f5f5f5; }}
+            .card {{ background: white; padding: 2rem; border-radius: 8px; 
+                     box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 360px; }}
+            input {{ width: 100%; padding: 0.6rem; margin: 0.5rem 0 1rem; 
+                     box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }}
+            button {{ width: 100%; padding: 0.75rem; background: #4f46e5; 
+                      color: white; border: none; border-radius: 4px; cursor: pointer; }}
+            .error {{ color: red; font-size: 0.85rem; display: none; }}
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h2>Set Your Password</h2>
+            <label>New Password</label>
+            <input type="password" id="password" placeholder="Min 8 characters" />
+            <label>Confirm Password</label>
+            <input type="password" id="confirm" placeholder="Repeat password" />
+            <p class="error" id="error"></p>
+            <button onclick="submit()">Set Password</button>
+        </div>
+
+        <script>
+            async function submit() {{
+                const password = document.getElementById('password').value;
+                const confirm = document.getElementById('confirm').value;
+                const error = document.getElementById('error');
+
+                if (!password) {{
+                    error.style.display = 'block';
+                    error.textContent = 'Password is required';
+                    return;
+                }}
+
+                if (password.length < 8) {{
+                    error.style.display = 'block';
+                    error.textContent = 'Password must be at least 8 characters';
+                    return;
+                }}
+
+                if (!/[A-Z]/.test(password)) {{
+                    error.style.display = 'block';
+                    error.textContent = 'Password must contain at least one uppercase letter';
+                    return;
+                }}
+
+                if (!/[0-9]/.test(password)) {{
+                    error.style.display = 'block';
+                    error.textContent = 'Password must contain at least one number';
+                    return;
+                }}
+
+                if (!confirm) {{
+                    error.style.display = 'block';
+                    error.textContent = 'Confirm password is required';
+                    return;
+                }}
+
+                if (password !== confirm) {{
+                    error.style.display = 'block';
+                    error.textContent = 'Passwords do not match';
+                    return;
+                }}
+
+                const res = await fetch('/auth/set-first-time-password', {{
+                    method: 'POST',
+                    headers: {{ 'Content-Type': 'application/json' }},
+                    body: JSON.stringify({{
+                        new_password: password,
+                        repeat_password: confirm,
+                        access_token: '{access_token}',
+                        refresh_token: '{refresh_token}'
+                    }})
+                }});
+
+                if (res.ok) {{
+                    window.location.href = '{settings.FRONTEND_URL}/login?onboarded=true';
+                }} else {{
+                    const data = await res.json();
+                    error.style.display = 'block';
+                    error.textContent = data.detail || 'Something went wrong';
+                }}
+            }}
+        </script>
+    </body>
+    </html>
+    """)
+
+class SetPasswordRequest(BaseModel):
+    new_password: str
+    access_token: str
+    refresh_token: str
+
+@auth_router.post("/set-first-time-password")
+def set_password(request: SetPasswordRequest):
+    print(request.access_token)
+    print(request.refresh_token)
+    supabase = get_supabase(
+        access_token=request.access_token,
+        refresh_token=request.refresh_token
+    )
     try:
         supabase.auth.update_user({"password": request.new_password})
         return {"message": "Password updated successfully"}
