@@ -1,128 +1,255 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cover Letter</title>
+    <title>Cover Letter — {{ applicant_name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+    /* ============ TOKENS ============ */
+    :root {
+        --ink:          #1c2530;
+        --muted:        #5b6472;
+        --faint:        #8993a1;
+        --accent:       #2a5c8a;
+        --accent-deep:  #1d4567;
+        --accent-tint:  #eaf1f7;
+        --divider:      #dbe1e7;
+        --paper:        #ffffff;
+    }
+
+    /* ============ RESET / PAGE ============ */
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
     @page {
         size: A4;
-        margin: 0.4in 1in 1in 1in;
+        margin: 16mm 17mm;
     }
 
     body {
-        font-family: Calibri, Arial, sans-serif;
-        font-size: 11pt;
-        line-height: 1.6;
-        color: #000;
-        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'Inter', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-size: 10.8pt;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
     }
 
-    .sender {
+    .page {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    a { color: var(--accent-deep); text-decoration: none; }
+
+    /* ============ HEADER ============ */
+    .header {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding-bottom: 14px;
+        border-bottom: 2.5px solid var(--ink);
+        margin-bottom: 22px;
+    }
+
+    .monogram {
+        flex: 0 0 auto;
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--paper);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Lora', Georgia, serif;
+        font-weight: 600;
+        font-size: 18pt;
+        letter-spacing: 1px;
+    }
+
+    .header-text {
+        flex: 1 1 auto;
+        min-width: 0;
         text-align: right;
-        margin-bottom: 5px;
     }
 
-    .sender div {
-        margin: 2px 0;
+    .header-name {
+        font-family: 'Lora', Georgia, serif;
+        font-weight: 600;
+        font-size: 21pt;
+        letter-spacing: 0.3px;
+        color: var(--ink);
+        margin: 0 0 1px 0;
+    }
+
+    .header-contact {
+        color: var(--muted);
+        font-size: 9.5pt;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 14px;
+        justify-content: flex-end;
+    }
+
+    .header-contact span {
+        white-space: nowrap;
+    }
+
+    .header-contact .sep {
+        color: var(--divider);
+        font-weight: 300;
+    }
+
+    /* ============ META ROW (Recipient + Date) ============ */
+    .meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 26px;
     }
 
     .recipient {
-        margin-bottom: 5px;
+        font-size: 10.3pt;
+        color: var(--ink);
+        line-height: 1.5;
+    }
+
+    .recipient .label {
+        font-size: 8pt;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: var(--faint);
+        margin-bottom: 3px;
+    }
+
+    .recipient .company {
+        font-weight: 600;
     }
 
     .date {
         text-align: right;
-        margin-bottom: 5px;
+        font-size: 10pt;
+        color: var(--muted);
+        padding-top: 14px;
+        white-space: nowrap;
     }
 
+    /* ============ SUBJECT ============ */
     .subject {
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 28px;
+        background: var(--accent-tint);
+        border-left: 3.5px solid var(--accent);
+        padding: 10px 16px;
+        font-family: 'Lora', Georgia, serif;
+        font-weight: 600;
+        font-size: 12.5pt;
+        color: var(--accent-deep);
+        margin-bottom: 26px;
+        letter-spacing: 0.2px;
     }
 
+    /* ============ GREETING ============ */
     .greeting {
-        margin-bottom: 20px;
+        margin-bottom: 18px;
+        font-weight: 500;
+        color: var(--ink);
     }
 
+    /* ============ BODY ============ */
     .paragraph {
-        margin-bottom: 16px;
+        margin-bottom: 14px;
         text-align: justify;
+        color: var(--ink);
+        line-height: 1.6;
     }
 
+    /* ============ SIGNATURE ============ */
     .signature {
-        margin-top: 40px;
+        margin-top: 36px;
+        padding-top: 20px;
+        border-top: 1px solid var(--divider);
     }
 
     .signature img {
-        max-height: 70px;
-        max-width: 180px;
+        max-height: 60px;
+        max-width: 160px;
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
-    .name {
-        margin-top: 1px;
-        font-weight: bold;
+    .sign-closing {
+        color: var(--muted);
+        font-size: 10pt;
+        margin-bottom: 4px;
+    }
+
+    .sign-name {
+        font-family: 'Lora', Georgia, serif;
+        font-weight: 600;
         font-size: 13pt;
+        color: var(--ink);
+        letter-spacing: 0.2px;
     }
 </style>
 
 </head>
 <body>
 
+<div class="page">
 
-<!-- Applicant Information -->
-<div class="sender">
-    <div class="name">{{ applicant_name }}</div>
-    <div>{{ applicant_location }}</div>
-    <div>{{ applicant_email }}</div>
-</div>
-
-<!-- Recipient Information -->
-<div class="recipient">
-    <div>To,</div>
-    <div>{{ company_name }}</div>
-    <div>{{ company_location }}</div>
-</div>
-
-<!-- Date -->
-<div class="date">
-    {{ date }}
-</div>
-
-<!-- Subject -->
-<div class="subject">
-    Application for {{ role }}
-</div>
-
-<!-- Greeting -->
-<div class="greeting">
-    Dear {{ contact_name }},
-</div>
-
-<!-- Body -->
-{% for paragraph in paragraphs %}
-    <div class="paragraph">
-        {{ paragraph }}
+    <!-- ======== HEADER ======== -->
+    <div class="header">
+        <div class="monogram">{{ applicant_name.split()[0][0] }}{{ applicant_name.split()[-1][0] }}</div>
+        <div class="header-text">
+            <div class="header-name">{{ applicant_name }}</div>
+            <div class="header-contact">
+                <span>{{ applicant_location }}</span>
+                <span class="sep">|</span>
+                <span>{{ applicant_email }}</span>
+            </div>
+        </div>
     </div>
-{% endfor %}
 
-<!-- Signature -->
-<div class="signature">
-    {% if sign_url %}
-        <img src="{{ sign_url }}" alt="Signature">
-    {% endif %}
-
-    <div>Warm Regards,</div>
-
-    <div class="name">
-        {{ applicant_name }}
+    <!-- ======== RECIPIENT + DATE ======== -->
+    <div class="meta-row">
+        <div class="recipient">
+            <div class="label">To</div>
+            <div class="company">{{ company_name }}</div>
+            <div>{{ company_location }}</div>
+        </div>
+        <div class="date">{{ date }}</div>
     </div>
-</div>
 
+    <!-- ======== SUBJECT ======== -->
+    <div class="subject">
+        Application for {{ role }}
+    </div>
+
+    <!-- ======== GREETING ======== -->
+    <div class="greeting">
+        Dear {{ contact_name }},
+    </div>
+
+    <!-- ======== BODY ======== -->
+    {% for paragraph in paragraphs %}
+        <div class="paragraph">
+            {{ paragraph }}
+        </div>
+    {% endfor %}
+
+    <!-- ======== SIGNATURE ======== -->
+    <div class="signature">
+        {% if sign_url %}
+            <img src="{{ sign_url }}" alt="Signature">
+        {% endif %}
+        <div class="sign-closing">Warm Regards,</div>
+        <div class="sign-name">{{ applicant_name }}</div>
+    </div>
+
+</div>
 
 </body>
 </html>

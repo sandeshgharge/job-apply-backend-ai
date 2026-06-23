@@ -7,6 +7,7 @@ from services.doc_service.template_management import template_env
 from services.doc_service.html_to_pdf.playwright import PdfService
 from entities.cv_model import CvData
 from entities.cover_letter_model import CoverLetterDocInfo
+from services.supabase_db_connection.supabase_client import get_supabase
 
 async def upload_file_to_storage(
     user_id: str,
@@ -55,7 +56,7 @@ def render_html(data: Union[CvData, CoverLetterDocInfo]) -> str:
         raise ValueError(f"Unsupported data type: {type(data)}")
 
     template = template_env.get_template(template_name)
-    return template.render(**data.model_dump())
+    return template.render(**data.model_dump(), image_url="")
 
 
 async def generate_pdf(html: str) -> bytes:

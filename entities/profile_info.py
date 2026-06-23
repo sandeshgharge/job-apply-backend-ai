@@ -9,12 +9,12 @@ class ProfileInfo(BaseModel):
     model_config = camel_config
 
     id: str
-    first_name: str
-    last_name: str
-    location: str
-    email: str
-    agent_api_url: str
-    agent_api_key: str
-    model_name: str
-    profile_image_url: Optional[str]
-    signature_image_url: Optional[str]
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    location: Optional[str] = None
+    email: Optional[str] = None
+    agent_api_url: Optional[str] = None
+    agent_api_key: Optional[str] = None
+    model_name: Optional[str] = None
+    profile_image_url: Optional[str] = None
+    signature_image_url: Optional[str] = None
