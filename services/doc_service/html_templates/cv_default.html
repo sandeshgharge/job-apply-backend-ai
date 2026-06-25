@@ -32,7 +32,7 @@
   }
   @page{
     size: A4;
-    margin: 16mm 17mm;
+    margin: 10mm 15mm 10mm 15mm;
   }
   .page{
     max-width: 800px;
@@ -45,11 +45,27 @@
   /* ============ HEADER ============ */
   .header{
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 18px;
     padding-bottom: 14px;
     border-bottom: 2.5px solid var(--ink);
     margin-bottom: 16px;
+  }
+  .header-left{
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .header-right{
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    margin-top: 35px;
+    max-width: 350px;
   }
   .monogram{
     flex: 0 0 auto;
@@ -65,6 +81,14 @@
     font-weight: 600;
     font-size: 19pt;
     letter-spacing: 1px;
+  }
+  .profile-pic{
+    flex: 0 0 auto;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--ink);
   }
   .header-text{ flex: 1 1 auto; min-width: 0; }
   .name{
@@ -98,6 +122,57 @@
   .meta-row svg{ width: 11px; height: 11px; flex: none; fill: var(--accent); }
   .meta-row a{ color: var(--muted); }
 
+  .links-row{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 9.3pt;
+  }
+  .links-row .link-item{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .links-row svg{ width: 12px; height: 12px; flex: none; fill: var(--accent); }
+  .links-row a{ color: var(--muted); font-weight: 500; }
+
+  /* ============ LANGUAGES ============ */
+  .languages-row{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 7px;
+  }
+  .languages-label{
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 4px;
+  }
+  .language-tag{
+    background: var(--accent-tint);
+    color: var(--accent-deep);
+    border: 1px solid var(--divider);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 8.2pt;
+    font-weight: 500;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+  }
+  .language-proficiency{
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 4px;
+    font-size: 7.8pt;
+  }
+
   /* ============ SECTION SHELL ============ */
   section{ margin-bottom: 14px; }
   section:last-child{ margin-bottom: 0; }
@@ -125,7 +200,7 @@
   }
 
   /* ============ SUMMARY ============ */
-  .summary p{ color: var(--ink); font-size: 10pt; }
+  .summary p{ color: var(--ink); font-size: 10pt; text-align: justify; }
 
   /* ============ SKILLS ============ */
   .skill-row{
@@ -194,6 +269,7 @@
     font-size: 9.6pt;
     color: var(--ink);
     margin-top: 4px;
+    text-align: justify;
   }
   ul.bullet-list{
     margin-top: 5px;
@@ -203,6 +279,7 @@
     font-size: 9.6pt;
     margin-bottom: 3px;
     color: var(--ink);
+    text-align: justify;
   }
   ul.bullet-list li::marker{ color: var(--accent); }
 
@@ -237,65 +314,77 @@
 
   /* ============ CUSTOM SECTIONS ============ */
   .custom-list{ padding-left: 16px; }
-  .custom-list li{ font-size: 9.6pt; margin-bottom: 3px; color: var(--ink); }
+  .custom-list li{ font-size: 9.6pt; margin-bottom: 3px; color: var(--ink); text-align: justify; }
 
 </style>
 </head>
 <body>
 <div class="page">
-
   <!-- ============ HEADER ============ -->
   <div class="header">
-    <div class="monogram">{{ personal_info.first_name[0]|upper }}{{ personal_info.last_name[0]|upper }}</div>
-    <div class="header-text">
-      <p class="name">{{ personal_info.first_name }} {{ personal_info.last_name|upper }}</p>
-      {% if personal_info.headline %}<p class="headline">{{ personal_info.headline }}</p>{% endif %}
+    <div class="header-left">
+      {% if image_url %}
+      <img class="profile-pic" src="{{ image_url }}" alt="{{ personal_info.first_name }} {{ personal_info.last_name }}" />
+      {% else %}
+      <div class="monogram">{{ personal_info.first_name[0]|upper }}{{ personal_info.last_name[0]|upper }}</div>
+      {% endif %}
+      <div class="header-text">
+        <p class="name">{{ personal_info.first_name }} {{ personal_info.last_name|upper }}</p>
+        {% if personal_info.headline %}<p class="headline">{{ personal_info.headline }}</p>{% endif %}
 
-      <div class="meta-row">
-        <span class="item">
-          <svg viewBox="0 0 24 24"><path d="M2 4h20v16H2V4zm2 2v.01L12 13l8-6.99V6H4zm16 12V8.24l-8 7-8-7V18h16z"/></svg>
-          {{ personal_info.email }}
-        </span>
-        {% if personal_info.phone %}
-        <span class="item">
-          <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.9 15.9 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11 11 0 0 0 3.4.55 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11 11 0 0 0 .55 3.4 1 1 0 0 1-.25 1z"/></svg>
-          {{ personal_info.phone }}
-        </span>
-        {% endif %}
-        {% if personal_info.address %}
-        <span class="item">
-          <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
-          {{ personal_info.address }}
-        </span>
-        {% endif %}
+        <div class="meta-row">
+          <span class="item">
+            <svg viewBox="0 0 24 24"><path d="M2 4h20v16H2V4zm2 2v.01L12 13l8-6.99V6H4zm16 12V8.24l-8 7-8-7V18h16z"/></svg>
+            {{ personal_info.email }}
+          </span>
+          {% if personal_info.phone %}
+          <span class="item">
+            <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.9 15.9 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11 11 0 0 0 3.4.55 1 1 0 0 1-.25 1z"/></svg>
+            {{ personal_info.phone }}
+          </span>
+          {% endif %}
+          {% if personal_info.address %}
+          <span class="item">
+            <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+            {{ personal_info.address }}
+          </span>
+          {% endif %}
+        </div>
 
-        {% if personal_info.links %}
-          {% if personal_info.links.linkedin %}
-          <span class="item"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM3 9h4v12H3V9zm6.5 0h3.8v1.7h.05c.53-.95 1.84-1.95 3.78-1.95 4.04 0 4.79 2.55 4.79 5.86V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.45-2.16 2.96V21h-4V9z"/></svg><a href="{{ personal_info.links.linkedin }}">LinkedIn</a></span>
-          {% endif %}
-          {% if personal_info.links.github %}
-          <span class="item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.3 6.84 9.65.5.1.68-.22.68-.49v-1.9c-2.78.62-3.37-1.36-3.37-1.36-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.36 1.12 2.94.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.13-4.56-5.02 0-1.11.39-2.02 1.03-2.73-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.9-1.32 2.75-1.05 2.75-1.05.55 1.42.2 2.47.1 2.73.64.71 1.03 1.62 1.03 2.73 0 3.9-2.35 4.76-4.58 5.02.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2z"/></svg><a href="{{ personal_info.links.github }}">GitHub</a></span>
-          {% endif %}
-          {% if personal_info.links.portfolio %}
-          <span class="item"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-3.18a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.1 1.5 2.43 1.94 3.96h-3.88c.44-1.53 1.11-2.86 1.94-3.96zM4.26 14a8.2 8.2 0 0 1 0-4h3.6a16.7 16.7 0 0 0 0 4h-3.6zm.81 2h3.18A15.6 15.6 0 0 0 9.63 19.56 8.03 8.03 0 0 1 5.07 16zm3.18-8H5.07a8.03 8.03 0 0 1 4.56-3.56A15.6 15.6 0 0 0 8.25 8zM12 19.96c-.83-1.1-1.5-2.43-1.94-3.96h3.88c-.44 1.53-1.11 2.86-1.94 3.96zM14.45 14H9.55a14.5 14.5 0 0 1 0-4h4.9a14.5 14.5 0 0 1 0 4zm.12 5.56A15.6 15.6 0 0 0 15.95 16h3.18a8.03 8.03 0 0 1-4.56 3.56zM16.34 14a16.7 16.7 0 0 0 0-4h3.6a8.2 8.2 0 0 1 0 4h-3.6z"/></svg><a href="{{ personal_info.links.portfolio }}">Portfolio</a></span>
-          {% endif %}
-          {% if personal_info.links.website %}
-          <span class="item"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-3.18a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.1 1.5 2.43 1.94 3.96h-3.88c.44-1.53 1.11-2.86 1.94-3.96zM4.26 14a8.2 8.2 0 0 1 0-4h3.6a16.7 16.7 0 0 0 0 4h-3.6zm.81 2h3.18A15.6 15.6 0 0 0 9.63 19.56 8.03 8.03 0 0 1 5.07 16zm3.18-8H5.07a8.03 8.03 0 0 1 4.56-3.56A15.6 15.6 0 0 0 8.25 8zM12 19.96c-.83-1.1-1.5-2.43-1.94-3.96h3.88c-.44 1.53-1.11 2.86-1.94 3.96zM14.45 14H9.55a14.5 14.5 0 0 1 0-4h4.9a14.5 14.5 0 0 1 0 4zm.12 5.56A15.6 15.6 0 0 0 15.95 16h3.18a8.03 8.03 0 0 1-4.56 3.56zM16.34 14a16.7 16.7 0 0 0 0-4h3.6a8.2 8.2 0 0 1 0 4h-3.6z"/></svg><a href="{{ personal_info.links.website }}">Website</a></span>
-          {% endif %}
+        {% if personal_info.languages %}
+        <div class="languages-row">
+          <span class="languages-label">Languages:</span>
+          {% for lang in personal_info.languages %}
+          <span class="language-tag">
+            {{ lang.language }}
+            {% if lang.proficiency %}
+            <span class="language-proficiency">({{ lang.proficiency }})</span>
+            {% endif %}
+          </span>
+          {% endfor %}
+        </div>
         {% endif %}
-
-        {# ---- Optional languages slot ----
-             CvData currently has no `languages` field even though CvLanguage exists.
-             If you add `languages: List[CvLanguage] = []` to CvData, uncomment this block
-             and it will render e.g. "English – C1  ·  German – B1" in the header. ----
-        {% if languages %}
-        <span class="item">
-          {% for lang in languages %}{{ lang.language }} – {{ lang.proficiency }}{% if not loop.last %} &nbsp;·&nbsp; {% endif %}{% endfor %}
-        </span>
-        {% endif %}
-        #}
       </div>
     </div>
+
+    {% if personal_info.links and (personal_info.links.linkedin or personal_info.links.github or personal_info.links.portfolio or personal_info.links.website) %}
+    <div class="header-right">
+      <div class="links-row">
+        {% if personal_info.links.linkedin %}
+        <span class="link-item"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM3 9h4v12H3V9zm6.5 0h3.8v1.7h.05c.53-.95 1.84-1.95 3.78-1.95 4.04 0 4.79 2.55 4.79 5.86V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.45-2.16 2.96V21h-4V9z"/></svg><a href="{{ personal_info.links.linkedin }}">LinkedIn</a></span>
+        {% endif %}
+        {% if personal_info.links.github %}
+        <span class="link-item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.3 6.84 9.65.5.1.68-.22.68-.49v-1.9c-2.78.62-3.37-1.36-3.37-1.36-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.36 1.12 2.94.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.13-4.56-5.02 0-1.11.39-2.02 1.03-2.73-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.9-1.32 2.75-1.05 2.75-1.05.55 1.42.2 2.47.1 2.73.64.71 1.03 1.62 1.03 2.73 0 3.9-2.35 4.76-4.58 5.02.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2z"/></svg><a href="{{ personal_info.links.github }}">GitHub</a></span>
+        {% endif %}
+        {% if personal_info.links.portfolio %}
+        <span class="link-item"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-3.18a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.1 1.5 2.43 1.94 3.96h-3.88c.44-1.53 1.11-2.86 1.94-3.96zM4.26 14a8.2 8.2 0 0 1 0-4h3.6a16.7 16.7 0 0 0 0 4h-3.6zm.81 2h3.18A15.6 15.6 0 0 0 9.63 19.56 8.03 8.03 0 0 1 5.07 16zm3.18-8H5.07a8.03 8.03 0 0 1 4.56-3.56A15.6 15.6 0 0 0 8.25 8zM12 19.96c-.83-1.1-1.5-2.43-1.94-3.96h3.88c-.44 1.53-1.11 2.86-1.94 3.96zM14.45 14H9.55a14.5 14.5 0 0 1 0-4h4.9a14.5 14.5 0 0 1 0 4zm.12 5.56A15.6 15.6 0 0 0 15.95 16h3.18a8.03 8.03 0 0 1-4.56 3.56zM16.34 14a16.7 16.7 0 0 0 0-4h3.6a8.2 8.2 0 0 1 0 4h-3.6z"/></svg><a href="{{ personal_info.links.portfolio }}">Portfolio</a></span>
+        {% endif %}
+        {% if personal_info.links.website %}
+        <span class="link-item"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-3.18a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.1 1.5 2.43 1.94 3.96h-3.88c.44-1.53 1.11-2.86 1.94-3.96zM4.26 14a8.2 8.2 0 0 1 0-4h3.6a16.7 16.7 0 0 0 0 4h-3.6zm.81 2h3.18A15.6 15.6 0 0 0 9.63 19.56 8.03 8.03 0 0 1 5.07 16zm3.18-8H5.07a8.03 8.03 0 0 1 4.56-3.56A15.6 15.6 0 0 0 8.25 8zM12 19.96c-.83-1.1-1.5-2.43-1.94-3.96h3.88c-.44 1.53-1.11 2.86-1.94 3.96zM14.45 14H9.55a14.5 14.5 0 0 1 0-4h4.9a14.5 14.5 0 0 1 0 4zm.12 5.56A15.6 15.6 0 0 0 15.95 16h3.18a8.03 8.03 0 0 1-4.56 3.56zM16.34 14a16.7 16.7 0 0 0 0-4h3.6a8.2 8.2 0 0 1 0 4h-3.6z"/></svg><a href="{{ personal_info.links.website }}">Website</a></span>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 
   <!-- ============ SUMMARY ============ -->
@@ -339,7 +428,7 @@
     <div class="entry">
       <div class="entry-header">
         <span class="entry-title">{{ exp.job_title }}</span>
-        <span class="entry-dates">{{ exp.start_date or '' }} – {{ 'Present' if exp.current else (exp.end_date or '') }}</span>
+        <span class="entry-dates">{{ exp.start_date|format_date }} – {{ 'Present' if exp.current else (exp.end_date|format_date) }}</span>
       </div>
       <p class="entry-org">{{ exp.company }}{% if exp.location %}, {{ exp.location }}{% endif %}</p>
       {% set resps = exp.responsibilities|selectattr('include')|list %}
@@ -362,7 +451,7 @@
     <div class="entry">
       <div class="entry-header">
         <span class="entry-title">{{ edu.degree }}{% if edu.field_of_study %} — {{ edu.field_of_study }}{% endif %}</span>
-        <span class="entry-dates">{{ edu.start_date or '' }} – {{ edu.end_date or '' }}</span>
+        <span class="entry-dates">{{ edu.start_date|format_date }} – {{ edu.end_date|format_date }}</span>
       </div>
       <p class="entry-org">{{ edu.institution }}{% if edu.location %}, {{ edu.location }}{% endif %}</p>
     </div>
@@ -379,7 +468,7 @@
     <div class="entry">
       <div class="entry-header">
         <span class="entry-title">{{ p.title }}{% if p.role %} — {{ p.role }}{% endif %}</span>
-        {% if p.start_date or p.end_date %}<span class="entry-dates">{{ p.start_date or '' }} – {{ p.end_date or '' }}</span>{% endif %}
+        {% if p.start_date or p.end_date %}<span class="entry-dates">{{ p.start_date|format_date }} – {{ p.end_date|format_date }}</span>{% endif %}
       </div>
       {% if p.description %}<p class="entry-desc">{{ p.description }}</p>{% endif %}
       {% if p.technologies %}
@@ -402,8 +491,8 @@
         <p class="card-title">{{ c.name }}</p>
         {% if c.issuer %}<p class="card-sub">{{ c.issuer }}</p>{% endif %}
         <p class="card-meta">
-          {%- if c.issue_date %}Issued {{ c.issue_date }}{% endif -%}
-          {%- if c.expiry_date %} · Expires {{ c.expiry_date }}{% endif -%}
+          {%- if c.issue_date %}Issued {{ c.issue_date|format_date }}{% endif -%}
+          {%- if c.expiry_date %} · Expires {{ c.expiry_date|format_date }}{% endif -%}
           {%- if c.credential_id %} · ID: {{ c.credential_id }}{% endif -%}
         </p>
         {% if c.credential_url %}<p class="link-line"><a href="{{ c.credential_url }}">{{ c.credential_url }}</a></p>{% endif %}
@@ -422,7 +511,7 @@
       {% for a in awards %}
       <div class="card">
         <p class="card-title">{{ a.title }}</p>
-        {% if a.issuer or a.date %}<p class="card-sub">{{ a.issuer or '' }}{% if a.issuer and a.date %} · {% endif %}{{ a.date or '' }}</p>{% endif %}
+        {% if a.issuer or a.date %}<p class="card-sub">{{ a.issuer or '' }}{% if a.issuer and a.date %} · {% endif %}{{ a.date|format_date }}</p>{% endif %}
         {% if a.description %}<p class="card-meta">{{ a.description }}</p>{% endif %}
       </div>
       {% endfor %}
@@ -439,7 +528,7 @@
     <div class="entry">
       <div class="entry-header">
         <span class="entry-title">{{ pub.title }}</span>
-        {% if pub.date %}<span class="entry-dates">{{ pub.date }}</span>{% endif %}
+        {% if pub.date %}<span class="entry-dates">{{ pub.date|format_date }}</span>{% endif %}
       </div>
       {% if pub.publisher %}<p class="entry-org">{{ pub.publisher }}</p>{% endif %}
       {% if pub.description %}<p class="entry-desc">{{ pub.description }}</p>{% endif %}
@@ -458,7 +547,7 @@
     <div class="entry">
       <div class="entry-header">
         <span class="entry-title">{{ v.role }}</span>
-        <span class="entry-dates">{{ v.start_date or '' }} – {{ v.end_date or '' }}</span>
+        <span class="entry-dates">{{ v.start_date|format_date }} – {{ v.end_date|format_date }}</span>
       </div>
       <p class="entry-org">{{ v.organization }}{% if v.location %}, {{ v.location }}{% endif %}</p>
       {% if v.description %}<p class="entry-desc">{{ v.description }}</p>{% endif %}

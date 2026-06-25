@@ -5,6 +5,8 @@ from entities.cv_model import CVDocument, CvData
 import services.cv_service as cv_service
 from services import storage_service
 from io import BytesIO
+from config.env import settings
+from services.profile_service import get_image_url
 
 cv_router = APIRouter(prefix="/cv", tags=["CV"])
 
@@ -58,9 +60,11 @@ async def delete_cv(cv_id: str):
 # PREVIEW (HTML)
 # -----------------------------------
 
-@cv_router.post("/preview")
-def render_cv(cv_data: CvData):
-    return storage_service.render_html(cv_data)
+@cv_router.post("/preview/{user_id}")
+def render_cv(request: Request, cv_data: CvData, user_id: str):
+    token = getattr(request.state, "token", None)
+    image_url = get_image_url(user_id, settings.PROFILE_IMAGE_NAME, settings.PROFILE_STORAGE_BUCKET, 2000, token)
+    return storage_service.render_html(cv_data, image_url)
 
 
 # -----------------------------------

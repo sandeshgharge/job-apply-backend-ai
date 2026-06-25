@@ -1,3 +1,5 @@
+from token import OP
+
 from pydantic import BaseModel, ConfigDict, Field, AliasChoices
 from typing import List, Optional
 from pydantic.alias_generators import to_camel
@@ -19,6 +21,10 @@ class CvLinks(BaseModel):
     portfolio: Optional[str] = None
     website: Optional[str] = None
 
+class CvLanguage(BaseModel):
+    model_config = camel_config
+    language: str
+    proficiency: str
 
 class CvPersonalInfo(BaseModel):
     model_config = camel_config
@@ -30,19 +36,12 @@ class CvPersonalInfo(BaseModel):
     phone: Optional[str] = None
     address: Optional[str] = None
     links: Optional[CvLinks] = None
+    languages: Optional[List[CvLanguage]] = []
 
 
 # -----------------------------
 # SKILLS
 # -----------------------------
-
-class CvLanguage(BaseModel):
-    model_config = camel_config
-
-    id: str
-    language: str
-    proficiency: str
-
 
 class CvSkills(BaseModel):
     model_config = camel_config

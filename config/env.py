@@ -21,6 +21,11 @@ class Settings(BaseSettings):
 
     FRONTEND_URL: str = Field(..., description="Front end url")
 
+    PROFILE_STORAGE_BUCKET: str = Field(..., description="Storage bucket name profile files.")
+    PROFILE_IMAGE_NAME: str = Field(..., description="Profile image url filename")
+
+    PROFILE_SIGN_IMAGE: str = Field(..., description="Profile signature image url filename")
+
     # Application
     DEBUG: bool = Field(False, description="Enable debug mode")
 

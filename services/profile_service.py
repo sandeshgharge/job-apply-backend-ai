@@ -34,7 +34,8 @@ def update_profile(user_id: str, profile_data: ProfileInfo, token: Optional[str]
         raise HTTPException(status_code=400, detail=str(e))
 
 
-def get_image_url(user_id: str, file_name: str, bucket: str, expires_in: int, token: Optional[str] = None) -> dict:
+def get_image_url(user_id: str, file_name: str, bucket: str, expires_in: int=3600, token: Optional[str] = None) -> dict:
+
     supabase = get_supabase(access_token=token)
     try:    
         response = supabase.storage.from_(bucket).create_signed_url(
@@ -45,8 +46,9 @@ def get_image_url(user_id: str, file_name: str, bucket: str, expires_in: int, to
         if not signed_url:
             raise HTTPException(status_code=500, detail="Failed to create signed URL")
 
-        return {"signed_url": signed_url}
+        return signed_url
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(e)
+        return None

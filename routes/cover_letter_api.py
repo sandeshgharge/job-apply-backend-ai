@@ -1,10 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from entities.cover_letter_model import CoverLetterDocInfo, CoverLetterDocument
 from services import cover_letter_service
 from services import storage_service
 from io import BytesIO
+from config.env import settings
+from services.profile_service import get_image_url
 
 cl_router = APIRouter(
     prefix="/cover-letter",
@@ -57,11 +59,15 @@ async def edit_cover_letter(
 ):
     return await cover_letter_service.update_cover_letter(cover_letter_id, cover_letter_info)
 
-@cl_router.post("/preview")
+@cl_router.post("/preview/{user_id}")
 def render_doc(
-        cover_letter_doc_info : CoverLetterDocInfo
+    request: Request,
+    user_id,
+    cover_letter_doc_info : CoverLetterDocInfo
 ):
-    return storage_service.render_html(cover_letter_doc_info)
+    token = getattr(request.state, "token", None)
+    image_url = get_image_url(user_id, settings.PROFILE_SIGN_IMAGE, settings.PROFILE_STORAGE_BUCKET, 2000, token)
+    return storage_service.render_html(cover_letter_doc_info, image_url)
 
 class HtmlToPdfRequest(BaseModel):
     html: str
@@ -79,4 +85,4 @@ async def generate_cover_letter_pdf(
             "Content-Disposition":
             "attachment; filename=cover-letter.pdf"
         }
-    )
+    )
