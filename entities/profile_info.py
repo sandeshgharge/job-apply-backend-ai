@@ -18,3 +18,4 @@ class ProfileInfo(BaseModel):
     model_name: Optional[str] = None
     profile_image_url: Optional[str] = None
     signature_image_url: Optional[str] = None
+    role: str = None

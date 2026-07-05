@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from typing import Optional
 from config.env import settings
 from services.supabase_db_connection.supabase_client import get_supabase
+from services.profile_service import get_profile
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -47,12 +48,15 @@ def login(request: LoginRequest):
             "password": request.password,
         })
 
+        user_details = get_profile(response.user.id, response.session.access_token) if response.user else None
+        print("User details:", user_details)
         if not response.session:
             raise HTTPException(status_code=401, detail="Invalid credentials")
         return {
             "access_token": response.session.access_token,
             "refresh_token": response.session.refresh_token,
             "user": response.user.model_dump() if hasattr(response.user, "model_dump") else response.user,
+            "profile_info": user_details.model_dump(by_alias=True) if user_details else None
         }
     except HTTPException:
         raise

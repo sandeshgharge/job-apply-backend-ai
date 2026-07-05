@@ -1,5 +1,8 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+from pydantic import Field, field_validator
+import json
+from typing import Any
+
 
 class Settings(BaseSettings):
     # MongoDB
@@ -20,6 +23,28 @@ class Settings(BaseSettings):
     GROQ_MODEL: str = Field("llama-3.1-8b-instant", description="Groq LLM model name")
 
     FRONTEND_URL: str = Field(..., description="Front end url")
+    ALLOWED_ORIGINS: Any = Field(default=[], description="Allowed origins for CORS and origin validation")
+
+    @field_validator("ALLOWED_ORIGINS", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v):
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return []
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    parsed = json.loads(v)
+                    if isinstance(parsed, list):
+                        return [origin.rstrip("/") for origin in parsed]
+                except json.JSONDecodeError:
+                    pass
+            # Replace semicolons with commas and split by comma to support both separators
+            normalized_v = v.replace(";", ",")
+            return [origin.strip().rstrip("/") for origin in normalized_v.split(",") if origin.strip()]
+        elif isinstance(v, list):
+            return [origin.rstrip("/") for origin in v]
+        return v
 
     PROFILE_STORAGE_BUCKET: str = Field(..., description="Storage bucket name profile files.")
     PROFILE_IMAGE_NAME: str = Field(..., description="Profile image url filename")

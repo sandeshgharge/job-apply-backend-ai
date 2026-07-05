@@ -1,8 +1,10 @@
 import logging
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from config.env import settings
 from middleware.supabase_middleware import SupabaseAuthMiddleware
 from services.model_connection import send_prompt
 from services.model_connection import groq_connection
@@ -25,13 +27,31 @@ class ExtractRequest(BaseModel):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.add_middleware(SupabaseAuthMiddleware)
+
+@app.middleware("http")
+async def validate_origin_middleware(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
+    origin = request.headers.get("origin")
+    if origin:
+        clean_origin = origin.lower().rstrip("/")
+        allowed_origins = [o.lower().rstrip("/") for o in settings.ALLOWED_ORIGINS]
+        if "*" not in allowed_origins and clean_origin not in allowed_origins:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": f"Origin '{origin}' is not allowed."}
+            )
+
+    return await call_next(request)
+
 app.include_router(cl_router)
 app.include_router(cv_router)
 app.include_router(auth_router)
