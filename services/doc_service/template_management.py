@@ -1,5 +1,6 @@
 # core/template_manager.py
 
+import json
 from pathlib import Path
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -34,4 +35,7 @@ template_env = Environment(
 )
 
 # Register the date formatter filter
-template_env.filters["format_date"] = format_date
+template_env.filters["format_date"] = format_date
+
+# Register tojson filter so templates can safely embed Python objects into JS
+template_env.filters["tojson"] = lambda v: json.dumps(v)

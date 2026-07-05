@@ -61,6 +61,7 @@ static/
 media/
 output/
 generated/
+scratch/
 
 # Temporary files
 

@@ -234,6 +234,7 @@ class CvData(BaseModel):
     interests: List[str] = []
     references: List[CvReference] = []
     custom_sections: List[CvCustomSection] = []
+    highlight_keywords: List[str] = []  # Manual keywords to highlight in experience responsibilities
 
 
 

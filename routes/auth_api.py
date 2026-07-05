@@ -84,6 +84,7 @@ def signup(request: SignupRequest):
         if response.session:
             session_data = {
                 "access_token": response.session.access_token,
+                "refresh_token": response.session.refresh_token,
             }
 
         return {"user": user_data, "session": session_data}
@@ -130,6 +131,7 @@ def get_session(authorization: Optional[str] = Header(None)):
         return {
             "session": {
                 "access_token": token,
+                "refresh_token": response.session.refresh_token,
                 "user": response.user.model_dump() if hasattr(response.user, "model_dump") else response.user,
             }
         }

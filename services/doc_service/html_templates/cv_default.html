@@ -316,6 +316,22 @@
   .custom-list{ padding-left: 16px; }
   .custom-list li{ font-size: 9.6pt; margin-bottom: 3px; color: var(--ink); text-align: justify; }
 
+  /* ============ RESPONSIBILITY HIGHLIGHTS ============ */
+  .hl-skill {
+    background: var(--accent-tint);
+    color: var(--accent-deep);
+    font-weight: 600;
+    border-radius: 2px;
+    padding: 0px 3px;
+  }
+  .hl-num {
+    background: #fff4e0;
+    color: #7a4d00;
+    font-weight: 700;
+    border-radius: 2px;
+    padding: 0px 3px;
+  }
+
 </style>
 </head>
 <body>
@@ -597,5 +613,90 @@
   {% endfor %}
 
 </div>
+
+<!-- ============ HIGHLIGHT SCRIPT ============ -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* 1. Skills array — from skills model + manual highlight_keywords */
+  var skillList = [].concat(
+    {% if skills and skills.frontend %}{{ skills.frontend | tojson | safe }}{% else %}[]{% endif %},
+    {% if skills and skills.backend %}{{ skills.backend | tojson | safe }}{% else %}[]{% endif %},
+    {% if skills and skills.devops %}{{ skills.devops | tojson | safe }}{% else %}[]{% endif %},
+    {% if highlight_keywords %}{{ highlight_keywords | tojson | safe }}{% else %}[]{% endif %}
+  );
+
+  /* 2. Sort longest-first to avoid partial matches (e.g. "Node.js" before "Node") */
+  skillList.sort(function(a, b) { return b.length - a.length; });
+
+  function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  /* Number pattern: matches $1.5M, 25%, 10k+, 3x, 500, 1,000 etc. */
+  var numPattern = /(\$?\d+(?:[.,]\d+)?(?:[kKmMbBgG]|%|x|\+)?)/g;
+
+  /* Wrap text-node matches in a span without corrupting existing HTML */
+  function highlightTextNode(textNode, pattern, cssClass) {
+    var text = textNode.nodeValue;
+    if (!pattern.test(text)) { pattern.lastIndex = 0; return; }
+    pattern.lastIndex = 0;
+
+    var frag = document.createDocumentFragment();
+    var last = 0, match;
+    while ((match = pattern.exec(text)) !== null) {
+      if (match.index > last) {
+        frag.appendChild(document.createTextNode(text.slice(last, match.index)));
+      }
+      var span = document.createElement('span');
+      span.className = cssClass;
+      span.textContent = match[0];
+      frag.appendChild(span);
+      last = pattern.lastIndex;
+    }
+    if (last < text.length) {
+      frag.appendChild(document.createTextNode(text.slice(last)));
+    }
+    textNode.parentNode.replaceChild(frag, textNode);
+  }
+
+  /* Walk all text nodes inside an element, skipping existing highlight spans */
+  function walkTextNodes(el, pattern, cssClass) {
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(node) {
+        /* Skip text inside already-highlighted spans */
+        var p = node.parentNode;
+        if (p && p.classList && (p.classList.contains('hl-skill') || p.classList.contains('hl-num'))) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var nodes = [];
+    while (walker.nextNode()) { nodes.push(walker.currentNode); }
+    /* Collect first, then replace (modifying DOM mid-walk is unsafe) */
+    nodes.forEach(function(n) { highlightTextNode(n, pattern, cssClass); });
+  }
+
+  /* 3. Process each experience bullet */
+  var listItems = document.querySelectorAll('section .bullet-list li');
+  listItems.forEach(function (li) {
+
+    /* Step A — highlight skill keywords (case-insensitive) */
+    if (skillList.length > 0) {
+      /* Use lookahead/lookbehind instead of \b so multi-word and special-char
+         skills like "Node.js", "CI/CD", "Machine Learning" match correctly */
+      var skillPattern = new RegExp(
+        '(?<![\\w])(' + skillList.map(escRe).join('|') + ')(?![\\w])',
+        'gi'
+      );
+      li.innerHTML = li.textContent.replace(skillPattern, '<span class="hl-skill">$&</span>');
+    }
+
+    /* Step B — highlight numbers via DOM text-node walk (safe, works everywhere) */
+    walkTextNodes(li, numPattern, 'hl-num');
+  });
+
+});
+</script>
+
 </body>
 </html>

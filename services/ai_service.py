@@ -1,4 +1,4 @@
-from services.model_connection import groq_connection
+from services.model_connection import send_prompt
 import json
 
 def extract_job_data(job_description: str) -> dict:
@@ -13,6 +13,6 @@ def extract_job_data(job_description: str) -> dict:
 """
 
 
-    output = groq_connection.call_model(prompt)
+    output = send_prompt.call_model(prompt)
     print("Extracted job data:", output)
     return json.loads(output)

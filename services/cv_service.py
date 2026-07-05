@@ -87,4 +87,4 @@ async def get_next_version(user_id: str) -> int:
         sort=[("version", -1)]
     )
     return (result["version"] + 1) if result else 1
-
+
