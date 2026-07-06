@@ -19,3 +19,4 @@ class ProfileInfo(BaseModel):
     profile_image_url: Optional[str] = None
     signature_image_url: Optional[str] = None
     role: str = None
+    use_default_api: bool = Field(default=True, description="Whether to use the default API or not")

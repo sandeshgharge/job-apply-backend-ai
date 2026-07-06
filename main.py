@@ -65,7 +65,7 @@ async def generate(request: Request):
     body = await request.json()
     #data = send_prompt.call_model(body.get("prompt"))
     data = groq_connection.call_model(body.get("prompt"))
-    return {"output": data}
+    return {"text": data}
 
 @app.post("/extract-job-data")
 async def extract_job_data_endpoint(request: Request):
