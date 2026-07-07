@@ -63,8 +63,8 @@ app.include_router(jobs_router)
 @app.post("/generate")
 async def generate(request: Request):
     body = await request.json()
-    #data = send_prompt.call_model(body.get("prompt"))
-    data = groq_connection.call_model(body.get("prompt"))
+    data = send_prompt.call_model(body.get("prompt"))
+    #data = groq_connection.call_model(body.get("prompt"))
     return {"text": data}
 
 @app.post("/extract-job-data")
