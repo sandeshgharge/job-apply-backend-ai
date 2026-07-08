@@ -53,6 +53,7 @@ class Settings(BaseSettings):
 
     # Application
     DEBUG: bool = Field(False, description="Enable debug mode")
+    APP_ENV: str = Field("local", description="Environment (local or production)")
 
     model_config = SettingsConfigDict(
         env_file=".env",
