@@ -15,11 +15,33 @@ from routes.auth_api import auth_router
 from routes.profile_api import profile_router
 from routes.storage_api import storage_router
 from routes.jobs_api import jobs_router
+from services.background_scheduler_service import ping_self
+
+from contextlib import asynccontextmanager
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 # Configure global logging
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handles startup and shutdown events."""
+    # Start the scheduler when FastAPI starts
+    scheduler = BackgroundScheduler()
+    # Ping every 14 minutes (Render sleeps after 15 minutes of inactivity)
+    scheduler.add_job(ping_self, 'interval', minutes=14)
+    scheduler.start()
+    logger.info("Background scheduler started successfully.")
+    
+    yield
+    
+    # Shut down scheduler when application stops
+    scheduler.shutdown()
+    logger.info("Background scheduler stopped.")
+
+app = FastAPI(lifespan=lifespan)
 
 class ExtractRequest(BaseModel):
     url: str

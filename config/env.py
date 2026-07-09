@@ -46,6 +46,7 @@ class Settings(BaseSettings):
             return [origin.rstrip("/") for origin in v]
         return v
 
+    APP_URL: str = Field(..., description="Application URL")
     PROFILE_STORAGE_BUCKET: str = Field(..., description="Storage bucket name profile files.")
     PROFILE_IMAGE_NAME: str = Field(..., description="Profile image url filename")
 
