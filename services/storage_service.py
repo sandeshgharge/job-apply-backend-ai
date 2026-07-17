@@ -62,8 +62,6 @@ def render_html(data: Union[CvData, CoverLetterDocInfo], image_url: Optional[str
 
 
 async def generate_pdf(html: str) -> bytes:
-    pdf_bytes = await asyncio.get_event_loop().run_in_executor(
-        None, PdfService.html_to_pdf, html
-    )
+    pdf_bytes = await PdfService.html_to_pdf(html)
     return pdf_bytes
 

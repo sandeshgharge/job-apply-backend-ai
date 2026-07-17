@@ -1,31 +1,31 @@
 # services/pdf_service.py
 
-from playwright.sync_api import sync_playwright
+from fastapi import Request
+from services.browser_service import browser_manager
 
 
 class PdfService:
 
     @staticmethod
-    def html_to_pdf(
+    async def html_to_pdf(
         html: str
     ) -> bytes:
 
-        with sync_playwright() as p:
 
-            browser = p.chromium.launch()
+        browser = browser_manager.browser
 
-            page = browser.new_page()
+        page = await browser.new_page()
 
-            page.set_content(
-                html,
-                wait_until="networkidle"
-            )
+        await page.set_content(
+            html,
+            wait_until="networkidle"
+        )
 
-            pdf_bytes = page.pdf(
-                format="A4",
-                print_background=True
-            )
+        pdf_bytes = await page.pdf(
+            format="A4",
+            print_background=True
+        )
 
-            browser.close()
+        await page.close()
 
-            return pdf_bytes
+        return pdf_bytes

@@ -1,3 +1,12 @@
+import asyncio
+import sys
+
+# Playwright requires ProactorEventLoop on Windows to spawn subprocesses.
+# uvicorn defaults to SelectorEventLoop on Windows, which raises NotImplementedError
+# when asyncio.create_subprocess_exec is called internally by Playwright.
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
 import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -20,6 +29,7 @@ from services.background_scheduler_service import ping_self
 
 from contextlib import asynccontextmanager
 from apscheduler.schedulers.background import BackgroundScheduler
+from services.browser_service import browser_manager
 
 
 # Configure global logging
@@ -28,19 +38,40 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Handles startup and shutdown events."""
-    # Start the scheduler when FastAPI starts
+    """Handles application startup and shutdown."""
+
     scheduler = BackgroundScheduler()
-    # Ping every 14 minutes (Render sleeps after 15 minutes of inactivity)
-    scheduler.add_job(ping_self, 'interval', minutes=14)
-    scheduler.start()
-    logger.info("Background scheduler started successfully.")
-    
-    yield
-    
-    # Shut down scheduler when application stops
-    scheduler.shutdown()
-    logger.info("Background scheduler stopped.")
+
+    try:
+        # -------------------------
+        # STARTUP
+        # -------------------------
+
+        # Start Playwright + Chromium
+        await browser_manager.start()
+        logger.info("Browser instance started!")
+
+        # Start Scheduler
+        scheduler.add_job(
+            ping_self,
+            "interval",
+            minutes=14
+        )
+        scheduler.start()
+        logger.info("Background scheduler started successfully.")
+
+
+        # Application runs here
+        yield
+
+    finally:
+        if scheduler.running:
+            scheduler.shutdown(wait=False)
+            logger.info("Background scheduler stopped.")
+
+        await browser_manager.stop()
+        logger.info("Browser instance closed!")
+
 
 app = FastAPI(lifespan=lifespan)
 
@@ -81,8 +112,8 @@ async def extract_job_data_endpoint(request: Request):
     return extract_job_data(job_description)
 
 @app.post("/extract-job-description")
-def extract(req: ExtractRequest):
-    return extract_job(req.url)
+async def extract(req: ExtractRequest):
+    return await extract_job(req.url)
 
 @app.get("/hello")
 async def read_root():

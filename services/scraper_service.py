@@ -1,16 +1,16 @@
 # scraper.py
-from playwright.sync_api import sync_playwright
+from services.browser_service import browser_manager
 
-def extract_job(url: str):
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+async def extract_job(url: str):
+    # Open a new tab/page on the shared browser instance
+    page = await browser_manager.new_page()
 
+    try:
         print("Extracting job from url: ", url)
-        page.goto(url, timeout=60000)
+        await page.goto(url, timeout=60000)
 
         # Wait for content to load
-        page.wait_for_load_state("networkidle", timeout=60000)
+        await page.wait_for_load_state("networkidle", timeout=60000)
 
         # Try common job description selectors
         selectors = [
@@ -26,7 +26,7 @@ def extract_job(url: str):
         for sel in selectors:
             try:
                 element = page.locator(sel).first
-                text = element.inner_text(timeout=10000)
+                text = await element.inner_text(timeout=10000)
                 if len(text) > 200:  # basic quality check
                     content = text
                     break
@@ -35,14 +35,16 @@ def extract_job(url: str):
 
         # Fallback: get full page text
         if not content:
-            content = page.locator("body").inner_text(timeout=15000)
-
-        browser.close()
+            content = await page.locator("body").inner_text(timeout=15000)
 
         return {
             "url": url,
             "description": clean_text(content)
         }
+    finally:
+        # Always close the page (not the shared browser)
+        await page.close()
+
 
 
 def clean_text(text: str):
