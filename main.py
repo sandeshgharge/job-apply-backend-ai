@@ -25,6 +25,7 @@ from routes.auth_api import auth_router
 from routes.profile_api import profile_router
 from routes.storage_api import storage_router
 from routes.jobs_api import jobs_router
+from routes.agents_api import agents_router
 from services.background_scheduler_service import ping_self
 
 from contextlib import asynccontextmanager
@@ -65,12 +66,13 @@ async def lifespan(app: FastAPI):
         yield
 
     finally:
+        await browser_manager.stop()
+        logger.info("Browser instance closed!")
+
         if scheduler.running:
             scheduler.shutdown(wait=False)
             logger.info("Background scheduler stopped.")
 
-        await browser_manager.stop()
-        logger.info("Browser instance closed!")
 
 
 app = FastAPI(lifespan=lifespan)
@@ -95,6 +97,7 @@ app.include_router(auth_router)
 app.include_router(profile_router)
 app.include_router(storage_router)
 app.include_router(jobs_router)
+app.include_router(agents_router)
 
 
 @app.post("/generate")
@@ -107,8 +110,7 @@ async def generate(request: Request):
 @app.post("/extract-job-data")
 async def extract_job_data_endpoint(request: Request):
     body = await request.json()
-    job_description = body.get("job_description")
-
+    job_description = body.get("jobDescription", body.get("jobDescription"))
     return extract_job_data(job_description)
 
 @app.post("/extract-job-description")

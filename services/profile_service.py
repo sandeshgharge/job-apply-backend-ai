@@ -9,7 +9,7 @@ def get_profile(user_id: str, token: Optional[str]) -> ProfileInfo:
     try:
         response = (
             supabase.table("user_details")
-            .select("*")
+            .select("*, user_api_agents!user_api_agents_user_id_fkey(*)")
             .eq("id", user_id)
             .single()
             .execute()
@@ -28,7 +28,8 @@ def update_profile(user_id: str, profile_data: ProfileInfo, token: Optional[str]
     supabase = get_supabase(access_token=token)
     try:
         profile_data.id = user_id
-        supabase.table("user_details").update(profile_data.model_dump()).eq("id", user_id).execute()
+        update_payload = profile_data.model_dump(exclude={"user_api_agents"})
+        supabase.table("user_details").update(update_payload).eq("id", user_id).execute()
         return {"message": "Profile updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
