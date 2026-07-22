@@ -35,6 +35,11 @@ class SetPasswordRequest(BaseModel):
     new_password: str
 
 
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+
 # ---------------------------------------------------------------------------
 # POST /auth/login
 # ---------------------------------------------------------------------------
@@ -49,7 +54,6 @@ def login(request: LoginRequest):
         })
 
         user_details = get_profile(response.user.id, response.session.access_token) if response.user else None
-        print("User details:", user_details)
         if not response.session:
             raise HTTPException(status_code=401, detail="Invalid credentials")
         return {
@@ -94,6 +98,31 @@ def signup(request: SignupRequest):
         return {"user": user_data, "session": session_data}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+# ---------------------------------------------------------------------------
+# POST /auth/refresh
+# ---------------------------------------------------------------------------
+
+@auth_router.post("/refresh")
+def refresh(request: RefreshRequest):
+    supabase = get_supabase()
+    try:
+        response = supabase.auth.refresh_session(request.refresh_token)
+        user_details = get_profile(response.user.id, response.session.access_token) if response.user else None
+        if not response or not response.session:
+            raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
+        return {
+            "access_token": response.session.access_token,
+            "refresh_token": response.session.refresh_token,
+            "user": response.user.model_dump() if hasattr(response.user, "model_dump") else response.user,
+            "profile_info": user_details.model_dump(by_alias=True) if user_details else None
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
 
 
 # ---------------------------------------------------------------------------

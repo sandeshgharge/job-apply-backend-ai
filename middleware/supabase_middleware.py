@@ -22,6 +22,7 @@ PUBLIC_PATHS: set[str] = {
     "/redoc",
     "/auth/login",
     "/auth/signup",
+    "/auth/refresh",
     "/auth/callback",
     "/favicon.ico",
     "/auth/set-password/page",
