@@ -1,0 +1,31 @@
+# Project Context
+This is a scalable Python FastAPI-based backend that powers AI-driven features for web and mobile applications. It integrates with LLMs (like Ollama), uses Playwright for browser automation, and includes a background scheduler.
+
+# Architecture & Organization
+- **main.py**: The FastAPI application entry point, lifecycle management (Playwright & APScheduler), and core middleware (Supabase, CORS, Origin).
+- **routes/**: FastAPI routers for different endpoints (auth, jobs, cv, cover letters, agents).
+- **services/**: Core business logic, including AI extraction, Playwright browser management, background tasks, and model connections.
+- **middleware/**: Custom FastAPI middleware.
+- **config/**: Configuration and environment variables.
+- **entities/**: Pydantic models and data structures.
+- **prompts/**: Reusable markdown templates for LLM prompts.
+
+# Tech Stack
+- **Framework**: FastAPI (Python)
+- **Concurrency**: `asyncio` for asynchronous operations. (Note: Uses `WindowsProactorEventLoopPolicy` on Windows for Playwright compatibility).
+- **Browser Automation**: Playwright (managed in `services.browser_service`).
+- **Scheduling**: `apscheduler` (BackgroundScheduler).
+- **Authentication**: Supabase (via `middleware.supabase_middleware`).
+- **Database**: Relational Data in Supabase DB (via `services.supabase_db_connection`) and NoSQL data (via `services.mongo_db_connection`)
+
+# Coding Standards & Best Practices
+- **Asynchronous Code**: Use `async`/`await` for I/O bound operations (API calls, browser interactions).
+- **Type Hinting**: Heavily utilize Python type hints and Pydantic models for request/response validation.
+- **Modularity**: Keep routes clean; delegate heavy processing to the `services/` directory.
+- **Prompt Management**: Keep LLM prompt structures isolated in the `prompts/` directory rather than hardcoding them in Python files.
+- **Logging**: Use the built-in `logging` module (already configured globally in `main.py`).
+- **Database**: Supabase Relational DB used to store user details and job details. MongoDB is used to store documents like CV, Cover Letter version and its HTML templates for each user id.
+
+# Commands
+- **Run the Server**: `uvicorn main:app --reload`
+- **Install Dependencies**: `pip install -r requirements.txt`
