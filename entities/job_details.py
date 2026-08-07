@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 from typing import Optional
+from datetime import datetime
 
 camel_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
@@ -12,7 +13,8 @@ class JobDetails(BaseModel):
     company_name: str
     role: str
     company_location: str
-    applied_date: Optional[str] = None
+    applied_date: Optional[datetime] = None  # timestamptz - set by Supabase default
+    updated_at: Optional[datetime] = None      # timestamptz - auto-updated by Supabase
     status: str
     salary: Optional[str] = None
     contact_name: Optional[str] = None
@@ -31,7 +33,8 @@ class JobDetailsUpdate(BaseModel):
     company_name: Optional[str] = None
     role: Optional[str] = None
     company_location: Optional[str] = None
-    applied_date: Optional[str] = None
+    applied_date: Optional[datetime] = None  # timestamptz - set by Supabase default
+    updated_at: Optional[datetime] = None      # timestamptz - auto-updated by Supabase
     status: Optional[str] = None
     salary: Optional[str] = None
     contact_name: Optional[str] = None
