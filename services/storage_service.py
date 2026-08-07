@@ -49,7 +49,15 @@ def remove_file_from_storage(
 # DOCUMENT RENDERING & PDF GENERATION
 # -----------------------------------
 
-def render_html(data: Union[CvData, CoverLetterDocInfo], image_url: Optional[str] = None) -> str:
+def render_html(data: Union[CvData, CoverLetterDocInfo], image_url: Optional[str] = None, custom_html: Optional[str] = None) -> str:
+    if custom_html:
+        from jinja2 import Environment, BaseLoader
+        preview_env = Environment(autoescape=True)
+        preview_env.filters["format_date"] = template_env.filters["format_date"]
+        preview_env.filters["tojson"] = template_env.filters["tojson"]
+        template = preview_env.from_string(custom_html)
+        return template.render(**data.model_dump(), image_url=image_url)
+
     if isinstance(data, CvData):
         template_name = "cv_default.html"
     elif isinstance(data, CoverLetterDocInfo):

@@ -60,11 +60,21 @@ async def delete_cv(cv_id: str):
 # PREVIEW (HTML)
 # -----------------------------------
 
+from bson import ObjectId
+from services.mongo_db_connection.db import cv_templates_collection
+
 @cv_router.post("/preview/{user_id}")
-def render_cv(request: Request, cv_data: CvData, user_id: str):
+async def render_cv(request: Request, cv_data: CvData, user_id: str, template_id: str = None):
     token = getattr(request.state, "token", None)
     image_url = get_image_url(user_id, settings.PROFILE_IMAGE_NAME, settings.PROFILE_STORAGE_BUCKET, 2000, token)
-    return storage_service.render_html(cv_data, image_url)
+    
+    custom_html = None
+    if template_id:
+        template = await cv_templates_collection.find_one({"_id": ObjectId(template_id)})
+        if template:
+            custom_html = template.get("html_template")
+            
+    return storage_service.render_html(cv_data, image_url, custom_html)
 
 
 # -----------------------------------

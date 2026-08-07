@@ -59,15 +59,26 @@ async def edit_cover_letter(
 ):
     return await cover_letter_service.update_cover_letter(cover_letter_id, cover_letter_info)
 
+from bson import ObjectId
+from services.mongo_db_connection.db import cl_templates_collection
+
 @cl_router.post("/preview/{user_id}")
-def render_doc(
+async def render_doc(
     request: Request,
     user_id,
-    cover_letter_doc_info : CoverLetterDocInfo
+    cover_letter_doc_info : CoverLetterDocInfo,
+    template_id: str = None
 ):
     token = getattr(request.state, "token", None)
     image_url = get_image_url(user_id, settings.PROFILE_SIGN_IMAGE, settings.PROFILE_STORAGE_BUCKET, 2000, token)
-    return storage_service.render_html(cover_letter_doc_info, image_url)
+    
+    custom_html = None
+    if template_id:
+        template = await cl_templates_collection.find_one({"_id": ObjectId(template_id)})
+        if template:
+            custom_html = template.get("html_template")
+            
+    return storage_service.render_html(cover_letter_doc_info, image_url, custom_html)
 
 class HtmlToPdfRequest(BaseModel):
     html: str

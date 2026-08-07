@@ -17,6 +17,7 @@ logger.setLevel(logging.INFO)
 PUBLIC_PATHS: set[str] = {
     "/hello",
     "/health",
+    "/api/health",
     "/docs",
     "/openapi.json",
     "/redoc",

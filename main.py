@@ -26,6 +26,8 @@ from routes.profile_api import profile_router
 from routes.storage_api import storage_router
 from routes.jobs_api import jobs_router
 from routes.agents_api import agents_router
+from routes.templates_api import templates_router
+from routes.health_api import health_router
 from services.background_scheduler_service import ping_self
 
 from contextlib import asynccontextmanager
@@ -98,6 +100,8 @@ app.include_router(profile_router)
 app.include_router(storage_router)
 app.include_router(jobs_router)
 app.include_router(agents_router)
+app.include_router(templates_router)
+app.include_router(health_router)
 
 
 @app.post("/generate")
