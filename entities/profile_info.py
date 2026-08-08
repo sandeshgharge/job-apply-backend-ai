@@ -15,6 +15,8 @@ class ProfileInfo(BaseModel):
     location: Optional[str] = None
     email: Optional[str] = None
     selected_agent_id: Optional[str] = None
+    selected_cv_template: Optional[str] = None
+    selected_cl_template: Optional[str] = None
     user_api_agents: Optional[List[ApiAgentInfo]] = None
     profile_image_url: Optional[str] = None
     signature_image_url: Optional[str] = None
