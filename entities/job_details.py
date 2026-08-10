@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from pydantic.alias_generators import to_camel
 from typing import Optional
 from datetime import datetime
@@ -24,6 +24,17 @@ class JobDetails(BaseModel):
     cover_letter_pdf_url: Optional[str] = None
     cv_pdf_url: Optional[str] = None
 
+    @field_validator('applied_date', 'updated_at', mode='before')
+    @classmethod
+    def append_time_to_date(cls, v):
+        if isinstance(v, str) and len(v) == 10:
+            try:
+                datetime.strptime(v, "%Y-%m-%d")
+                return f"{v}T{datetime.now().strftime('%H:%M:%S')}"
+            except ValueError:
+                pass
+        return v
+
 
 class JobDetailsUpdate(BaseModel):
     """All-optional version of JobDetails for partial / PATCH updates."""
@@ -43,3 +54,14 @@ class JobDetailsUpdate(BaseModel):
     job_description: Optional[str] = None
     cover_letter_pdf_url: Optional[str] = None
     cv_pdf_url: Optional[str] = None
+
+    @field_validator('applied_date', 'updated_at', mode='before')
+    @classmethod
+    def append_time_to_date(cls, v):
+        if isinstance(v, str) and len(v) == 10:
+            try:
+                datetime.strptime(v, "%Y-%m-%d")
+                return f"{v}T{datetime.now().strftime('%H:%M:%S')}"
+            except ValueError:
+                pass
+        return v

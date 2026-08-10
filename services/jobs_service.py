@@ -12,7 +12,7 @@ from services import cv_service, cover_letter_service
 async def add_job(jd: JobDetails, token: Optional[str] = None, cv_data: Optional[CvData] = None, cl_data: Optional[CoverLetterDocInfo] = None) -> dict:
     supabase = get_supabase(access_token=token)
     try:
-        data = jd.model_dump(exclude_none=True)
+        data = jd.model_dump(mode='json', exclude_none=True)
         response = supabase.table("jobs").insert(data).execute()
         job_id = response.data[0].get('id')
         jd.id = job_id  # Update the JobDetails with the generated ID for later use
@@ -61,7 +61,7 @@ async def add_job(jd: JobDetails, token: Optional[str] = None, cv_data: Optional
 def update_job(id: str, request_data: JobDetailsUpdate, token: Optional[str]) -> dict:
     supabase = get_supabase(access_token=token)
     try:
-        data = request_data.model_dump(exclude_none=True)
+        data = request_data.model_dump(mode='json', exclude_none=True)
         data["id"] = id
 
         response = (
