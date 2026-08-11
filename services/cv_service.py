@@ -1,4 +1,5 @@
 from bson import ObjectId
+from bson.errors import InvalidId
 from fastapi import HTTPException
 from pydantic import Field
 from entities.cv_model import CVDocument, CvData
@@ -69,8 +70,16 @@ async def update_cv(cv_id: str, cv_info: dict) -> CVDocument:
 
 
 async def delete_cv(cv_id: str) -> dict[str, str]:
+    try:
+        obj_id = ObjectId(cv_id)
+    except InvalidId:
+        raise HTTPException(
+            status_code=404,
+            detail="CV not found"
+        )
+
     result = await cv_collection.delete_one({
-        "_id": ObjectId(cv_id)
+        "_id": obj_id
     })
 
     if result.deleted_count == 0:

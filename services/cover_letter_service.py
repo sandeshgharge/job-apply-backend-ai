@@ -1,8 +1,10 @@
 from bson import ObjectId
+from bson.errors import InvalidId
 from fastapi import HTTPException
 from pydantic import Field
 from entities.cover_letter_model import CoverLetterDocInfo, CoverLetterDocument
 from services.mongo_db_connection.db import cover_letter_collection
+
 
 
 async def insert_cover_letter(cl_doc: CoverLetterDocument) -> CoverLetterDocument:
@@ -77,8 +79,16 @@ async def update_cover_letter(
 
 
 async def delete_cover_letter(cover_letter_id: str) -> dict:
+    try:
+        obj_id = ObjectId(cover_letter_id)
+    except InvalidId:
+        raise HTTPException(
+            status_code=404,
+            detail="Cover letter not found"
+        )
+
     result = await cover_letter_collection.delete_one({
-        "_id": ObjectId(cover_letter_id)
+        "_id": obj_id
     })
 
     if result.deleted_count == 0:

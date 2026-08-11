@@ -59,6 +59,18 @@ async def edit_cover_letter(
 ):
     return await cover_letter_service.update_cover_letter(cover_letter_id, cover_letter_info)
 
+
+# -----------------------------------
+# DELETE
+# -----------------------------------
+
+@cl_router.delete("/{cover_letter_id}")
+async def delete_cover_letter(
+    cover_letter_id: str
+):
+    return await cover_letter_service.delete_cover_letter(cover_letter_id)
+
+
 from bson import ObjectId
 from services.mongo_db_connection.db import cl_templates_collection
 
