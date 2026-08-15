@@ -109,10 +109,10 @@ def refresh(request: RefreshRequest):
     supabase = get_supabase()
     try:
         response = supabase.auth.refresh_session(request.refresh_token)
-        user_details = get_profile(response.user.id, response.session.access_token) if response.user else None
-        if not response or not response.session:
+        if not response or not response.session or not response.user:
             raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
 
+        user_details = get_profile(response.user.id, response.session.access_token)
         return {
             "access_token": response.session.access_token,
             "refresh_token": response.session.refresh_token,
