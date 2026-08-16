@@ -411,28 +411,27 @@
   {% endif %}
 
   <!-- ============ SKILLS ============ -->
-  {% if skills and (skills.frontend or skills.backend or skills.devops) %}
-  <section>
-    <h2>Skills</h2>
-    {% if skills.frontend %}
-    <div class="skill-row">
-      <span class="skill-label">Frontend</span>
-      <div class="tag-group">{% for s in skills.frontend %}<span class="tag">{{ s }}</span>{% endfor %}</div>
-    </div>
+  {% if skills %}
+    {% set ns = namespace(has_skills=false) %}
+    {% for category_data in skills %}
+      {% if category_data.get('include', true) and category_data.get('items') %}
+        {% set ns.has_skills = true %}
+      {% endif %}
+    {% endfor %}
+
+    {% if ns.has_skills %}
+    <section>
+      <h2>Skills</h2>
+      {% for category_data in skills %}
+        {% if category_data.get('include', true) and category_data.get('items') %}
+        <div class="skill-row">
+          <span class="skill-label">{{ category_data.get('category') }}</span>
+          <div class="tag-group">{% for s in category_data.get('items', []) %}<span class="tag">{{ s }}</span>{% endfor %}</div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </section>
     {% endif %}
-    {% if skills.backend %}
-    <div class="skill-row">
-      <span class="skill-label">Backend</span>
-      <div class="tag-group">{% for s in skills.backend %}<span class="tag">{{ s }}</span>{% endfor %}</div>
-    </div>
-    {% endif %}
-    {% if skills.devops %}
-    <div class="skill-row">
-      <span class="skill-label">DevOps</span>
-      <div class="tag-group">{% for s in skills.devops %}<span class="tag">{{ s }}</span>{% endfor %}</div>
-    </div>
-    {% endif %}
-  </section>
   {% endif %}
 
   <!-- ============ EXPERIENCE ============ -->
@@ -619,12 +618,15 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   /* 1. Skills array — from skills model + manual highlight_keywords */
-  var skillList = [].concat(
-    {% if skills and skills.frontend %}{{ skills.frontend | tojson | safe }}{% else %}[]{% endif %},
-    {% if skills and skills.backend %}{{ skills.backend | tojson | safe }}{% else %}[]{% endif %},
-    {% if skills and skills.devops %}{{ skills.devops | tojson | safe }}{% else %}[]{% endif %},
-    {% if highlight_keywords %}{{ highlight_keywords | tojson | safe }}{% else %}[]{% endif %}
-  );
+  var skillList = [];
+  {% if skills %}
+    {% for cat_data in skills %}
+      {% if cat_data.get('include', true) and cat_data.get('items') %}
+      skillList = skillList.concat({{ cat_data.get('items', []) | tojson | safe }});
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  skillList = skillList.concat({% if highlight_keywords %}{{ highlight_keywords | tojson | safe }}{% else %}[]{% endif %});
 
   /* 2. Sort longest-first to avoid partial matches (e.g. "Node.js" before "Node") */
   skillList.sort(function(a, b) { return b.length - a.length; });

@@ -43,13 +43,11 @@ class CvPersonalInfo(BaseModel):
 # SKILLS
 # -----------------------------
 
-class CvSkills(BaseModel):
+class CvSkillCategory(BaseModel):
     model_config = camel_config
-
-    frontend: List[str] = []
-    backend: List[str] = []
-    devops: List[str] = []
-
+    category: str
+    include: bool = True
+    items: List[str] = []
 
 # -----------------------------
 # EXPERIENCE
@@ -218,12 +216,15 @@ class CvCustomSection(BaseModel):
 # MAIN DATA
 # -----------------------------
 
+from typing import Dict, Any
+from pydantic import field_validator
+
 class CvData(BaseModel):
     model_config = camel_config
 
     personal_info: CvPersonalInfo
     summary: Optional[str] = None
-    skills: Optional[CvSkills] = None
+    skills: Optional[List[CvSkillCategory]] = Field(default_factory=list)
     experience: List[CvExperience] = []
     education: List[CvEducation] = []
     projects: List[CvProject] = []
@@ -235,6 +236,44 @@ class CvData(BaseModel):
     references: List[CvReference] = []
     custom_sections: List[CvCustomSection] = []
     highlight_keywords: List[str] = []  # Manual keywords to highlight in experience responsibilities
+
+    @field_validator("skills", mode="before")
+    @classmethod
+    def convert_legacy_skills(cls, v: Any) -> Any:
+        """
+        Migrates legacy string lists or dictionary structures to the new Array format.
+        """
+        if not v:
+            return []
+        
+        # If it's already a list, return it
+        if isinstance(v, list):
+            return v
+            
+        # If it's a dict, convert to list of objects
+        if isinstance(v, dict):
+            new_skills = []
+            for cat, items_or_obj in v.items():
+                if isinstance(items_or_obj, list):
+                    # Extremely old legacy: {"frontend": ["HTML"]}
+                    new_skills.append({"category": cat, "include": True, "items": items_or_obj})
+                elif isinstance(items_or_obj, dict):
+                    # Intermediate legacy: {"frontend": {"include": True, "items": ["HTML"]}}
+                    new_skills.append({
+                        "category": cat,
+                        "include": items_or_obj.get("include", True),
+                        "items": items_or_obj.get("items", [])
+                    })
+                else:
+                    # In case it's a CvSkillCategory object during intermediate parsing
+                    new_skills.append({
+                        "category": cat,
+                        "include": getattr(items_or_obj, "include", True),
+                        "items": getattr(items_or_obj, "items", [])
+                    })
+            return new_skills
+            
+        return v
 
 
 
