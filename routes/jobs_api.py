@@ -7,9 +7,7 @@ Proxies Supabase operations for the `jobs` table.
 from fastapi import APIRouter, File, HTTPException, Request, UploadFile
 from typing import List, Optional
 
-from entities.cover_letter_model import CoverLetterDocInfo
-from entities.cv_model import CvData
-from entities.job_details import JobDetails, JobDetailsUpdate
+from entities.job_details import JobDetails, JobDetailsUpdate, CreateJobRequest
 import services.jobs_service as jobs_service
 
 jobs_router = APIRouter(prefix="/jobs", tags=["Jobs"])
@@ -21,11 +19,15 @@ jobs_router = APIRouter(prefix="/jobs", tags=["Jobs"])
 @jobs_router.post("", response_model=JobDetails)
 async def create_job(
     request: Request,
-    jd: JobDetails,
-    cv_data: Optional[CvData]   ,
-    cover_letter_data: Optional[CoverLetterDocInfo]):
+    job_req: CreateJobRequest
+):
     token = getattr(request.state, "token", None)
-    return await jobs_service.add_job(jd, token, cv_data, cover_letter_data)
+    return await jobs_service.add_job(
+        jd=job_req.jd,
+        token=token,
+        cv_data=job_req.cv_data,
+        cl_data=job_req.cover_letter_data
+    )
 
 @jobs_router.post("/upsert", response_model=JobDetails)
 async def upsertJob(

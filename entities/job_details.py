@@ -1,7 +1,10 @@
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, AliasChoices, field_validator
 from pydantic.alias_generators import to_camel
 from typing import Optional
 from datetime import datetime
+
+from entities.cv_model import CvData
+from entities.cover_letter_model import CoverLetterDocInfo
 
 camel_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
@@ -65,3 +68,17 @@ class JobDetailsUpdate(BaseModel):
             except ValueError:
                 pass
         return v
+
+
+class CreateJobRequest(BaseModel):
+    model_config = camel_config
+
+    jd: JobDetails
+    cv_data: Optional[CvData] = Field(
+        default=None,
+        validation_alias=AliasChoices("cvData", "cv_data")
+    )
+    cover_letter_data: Optional[CoverLetterDocInfo] = Field(
+        default=None,
+        validation_alias=AliasChoices("coverLetterData", "cover_letter_data", "cl_data", "clData")
+    )

@@ -48,13 +48,13 @@ class CoverLetterDocInfo(BaseModel):
         populate_by_name=True
     )
 
-    applicant_name: str
-    applicant_location: str
-    applicant_email: str
-    company_name: str
-    company_location: str
+    applicant_name: Optional[str] = None
+    applicant_location: Optional[str] = None
+    applicant_email: Optional[str] = None
+    company_name: Optional[str] = None
+    company_location: Optional[str] = None
     contact_name: Optional[str] = "Hiring Manager"
-    date: str
-    role: str
-    paragraphs: List[str]
-    sign_url: Optional[str]
+    date: Optional[str] = None
+    role: Optional[str] = None
+    paragraphs: List[str] = Field(default_factory=list)
+    sign_url: Optional[str] = None
